@@ -8,6 +8,7 @@ import "@fontsource/manrope/600.css";
 import "./globals.css";
 import "./desktop-claytone.css";
 import "./desktop-performance.css";
+import "./claytone-refinement.css";
 
 export const metadata: Metadata = {
   title: "Нонна | ClayTone Nail Studio",
@@ -48,6 +49,7 @@ export default function RootLayout({
           aria-hidden="true"
           tabIndex={-1}
         />
+        <script src="claytone-enhancements.js" defer />
         <script
           type="text/javascript"
           src="//w962951.yclients.com/widgetJS"
