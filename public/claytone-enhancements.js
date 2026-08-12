@@ -38,52 +38,20 @@
     });
   };
 
-  let promotionImages = null;
-  let promotionLoadStarted = false;
-  const loadPromotionImages = async () => {
-    if (promotionLoadStarted) return;
-    promotionLoadStarted = true;
-    try {
-      const [loyalty, combo] = await Promise.all([
-        fetch(assetUrl("promotion-loyalty-2026-small.txt")).then((response) => {
-          if (!response.ok) throw new Error(`loyalty ${response.status}`);
-          return response.text();
-        }),
-        fetch(assetUrl("promotion-combo-2026-small.txt")).then((response) => {
-          if (!response.ok) throw new Error(`combo ${response.status}`);
-          return response.text();
-        }),
-      ]);
-      promotionImages = {
-        loyalty: `data:image/webp;base64,${loyalty.trim()}`,
-        combo: `data:image/webp;base64,${combo.trim()}`,
-      };
-      enhancePromotions();
-    } catch (error) {
-      console.warn("ClayTone promotion images could not be loaded", error);
-      promotionLoadStarted = false;
-    }
-  };
-
   const enhancePromotions = () => {
-    if (!promotionImages) {
-      loadPromotionImages();
-      return;
-    }
-
     const cards = document.querySelectorAll(".mct-promotion-card");
     const firstImage = cards[0]?.querySelector("img");
     const secondImage = cards[1]?.querySelector("img");
 
     if (firstImage && firstImage.dataset.claytonePromoUpdated !== "1") {
       firstImage.dataset.claytonePromoUpdated = "1";
-      firstImage.src = promotionImages.loyalty;
+      firstImage.src = assetUrl("promotion-loyalty-2026.webp");
       firstImage.alt = "Карточки благодарности и лояльности ClayTone";
     }
 
     if (secondImage && secondImage.dataset.claytonePromoUpdated !== "1") {
       secondImage.dataset.claytonePromoUpdated = "1";
-      secondImage.src = promotionImages.combo;
+      secondImage.src = assetUrl("promotion-combo-2026.webp");
       secondImage.alt = "Маникюр и педикюр ClayTone в одной записи";
     }
   };
@@ -120,7 +88,6 @@
     if (!viewport || viewport.dataset.claytoneTrackpad === "1") return;
     viewport.dataset.claytoneTrackpad = "1";
 
-    // Do not pause the film strip simply because the pointer is hovering it.
     const blockHoverDelegation = (event) => event.stopPropagation();
     viewport.addEventListener("mouseover", blockHoverDelegation, true);
     viewport.addEventListener("mouseout", blockHoverDelegation, true);
