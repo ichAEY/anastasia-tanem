@@ -3,6 +3,33 @@
   const siteBase = new URL("./", scriptUrl);
   const assetUrl = (name) => new URL(`assets/${name}`, siteBase).href;
 
+  const galleryReplacements = new Map([
+    ["work-01.webp", ["gallery-hq-01-20260813.webp", "Работа ClayTone — комбинированный дизайн ногтей"]],
+    ["work-02.webp", ["gallery-hq-02-20260813.webp", "Работа ClayTone — глубокий винный маникюр"]],
+    ["work-03.webp", ["gallery-hq-03-20260813.webp", "Работа ClayTone — розовый миндаль с деликатным дизайном"]],
+    ["work-04.webp", ["gallery-hq-04-20260813.webp", "Работа ClayTone — светло-голубой маникюр"]],
+    ["work-05.webp", ["gallery-hq-05-20260813.webp", "Работа ClayTone — натуральный нюдовый маникюр"]],
+  ]);
+
+  const basename = (src) => {
+    try {
+      return new URL(src, window.location.href).pathname.split("/").pop() || "";
+    } catch {
+      return src.split("/").pop() || "";
+    }
+  };
+
+  const enhanceGalleryPhotos = () => {
+    document.querySelectorAll("img").forEach((img) => {
+      const replacement = galleryReplacements.get(
+        basename(img.getAttribute("src") || img.src)
+      );
+      if (!replacement) return;
+      img.src = assetUrl(replacement[0]);
+      img.alt = replacement[1];
+    });
+  };
+
   const enhancePromotions = () => {
     const cards = document.querySelectorAll(".mct-promotion-card");
     const firstImage = cards[0]?.querySelector("img");
@@ -104,6 +131,7 @@
   });
 
   const run = () => {
+    enhanceGalleryPhotos();
     enhancePromotions();
     enhanceDesktopGallery();
     pauseMovingRowsOffscreen();
