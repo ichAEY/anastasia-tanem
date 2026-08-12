@@ -7,6 +7,7 @@ import "@fontsource/manrope/500.css";
 import "@fontsource/manrope/600.css";
 import "./globals.css";
 import "./desktop-claytone.css";
+import "./desktop-performance.css";
 
 export const metadata: Metadata = {
   title: "Нонна | ClayTone Nail Studio",
