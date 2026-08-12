@@ -38,20 +38,52 @@
     });
   };
 
+  let promotionImages = null;
+  let promotionLoadStarted = false;
+  const loadPromotionImages = async () => {
+    if (promotionLoadStarted) return;
+    promotionLoadStarted = true;
+    try {
+      const [loyalty, combo] = await Promise.all([
+        fetch(assetUrl("promotion-loyalty-2026-small.txt")).then((response) => {
+          if (!response.ok) throw new Error(`loyalty ${response.status}`);
+          return response.text();
+        }),
+        fetch(assetUrl("promotion-combo-2026-small.txt")).then((response) => {
+          if (!response.ok) throw new Error(`combo ${response.status}`);
+          return response.text();
+        }),
+      ]);
+      promotionImages = {
+        loyalty: `data:image/webp;base64,${loyalty.trim()}`,
+        combo: `data:image/webp;base64,${combo.trim()}`,
+      };
+      enhancePromotions();
+    } catch (error) {
+      console.warn("ClayTone promotion images could not be loaded", error);
+      promotionLoadStarted = false;
+    }
+  };
+
   const enhancePromotions = () => {
+    if (!promotionImages) {
+      loadPromotionImages();
+      return;
+    }
+
     const cards = document.querySelectorAll(".mct-promotion-card");
     const firstImage = cards[0]?.querySelector("img");
     const secondImage = cards[1]?.querySelector("img");
 
     if (firstImage && firstImage.dataset.claytonePromoUpdated !== "1") {
       firstImage.dataset.claytonePromoUpdated = "1";
-      firstImage.src = assetUrl("promotion-loyalty-2026.webp");
+      firstImage.src = promotionImages.loyalty;
       firstImage.alt = "Карточки благодарности и лояльности ClayTone";
     }
 
     if (secondImage && secondImage.dataset.claytonePromoUpdated !== "1") {
       secondImage.dataset.claytonePromoUpdated = "1";
-      secondImage.src = assetUrl("promotion-combo-2026.webp");
+      secondImage.src = promotionImages.combo;
       secondImage.alt = "Маникюр и педикюр ClayTone в одной записи";
     }
   };
@@ -88,13 +120,10 @@
     if (!viewport || viewport.dataset.claytoneTrackpad === "1") return;
     viewport.dataset.claytoneTrackpad = "1";
 
-    // React pauses this row on simple mouse hover. Stop those delegated hover events
-    // so the strip keeps moving until the user actually scrolls it.
+    // Do not pause the film strip simply because the pointer is hovering it.
     const blockHoverDelegation = (event) => event.stopPropagation();
     viewport.addEventListener("mouseover", blockHoverDelegation, true);
     viewport.addEventListener("mouseout", blockHoverDelegation, true);
-
-    // Reset a possible paused state left by an early hover during hydration.
     window.setTimeout(() => dispatchGalleryPointer(viewport, "pointerup", 0), 0);
 
     let gestureActive = false;
@@ -108,7 +137,6 @@
       if (!horizontalDelta) return;
 
       event.preventDefault();
-
       if (!gestureActive) {
         gestureActive = true;
         virtualX = 0;
