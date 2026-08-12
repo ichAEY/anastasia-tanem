@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Remove old exported Next assets
+        run: rm -rf public/_next
+
       - name: Build static site
         run: npx next build
 
