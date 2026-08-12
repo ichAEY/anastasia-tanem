@@ -1,0 +1,65 @@
+/* Desktop-only performance pass. Keeps the current visual language and animations. */
+
+@media (min-width: 768px) {
+  /* Large reveal effects were blurring entire sections while scrolling.
+     Keep the fade + movement, but avoid the expensive full-section blur. */
+  .mct-reveal {
+    filter: none;
+    will-change: opacity, transform;
+    transition:
+      opacity 760ms cubic-bezier(.22, .78, .25, 1),
+      transform 900ms cubic-bezier(.22, .78, .25, 1);
+  }
+
+  .mct-reveal.is-visible {
+    filter: none;
+  }
+
+  /* The two continuously moving strips stay on isolated paint layers. */
+  .dct-gallery-viewport,
+  .mct-review-viewport {
+    contain: paint;
+    isolation: isolate;
+  }
+
+  .dct-gallery-track,
+  .mct-review-track {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Skip painting large lower-page sections while they are far off screen.
+     Their real size is remembered after the first render, so layout stays stable. */
+  .mct-promotions,
+  .mct-about,
+  .mct-reviews,
+  .mct-visit {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+
+  /* The floating booking card is almost opaque already; removing backdrop blur
+     prevents a costly re-blur of the page behind it on every scroll frame. */
+  .mct-sticky {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  /* Keep transformed gallery images on stable compositor surfaces. */
+  .dct-gallery-module .dct-film-frame img,
+  .mct-promotion-card img,
+  .dct-hero-portrait img {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+/* On a wide desktop the infinite portfolio strip should use the screen,
+   while the rest of the typography/content keeps its approved max width. */
+@media (min-width: 1181px) {
+  #mobile-portfolio .dct-film-strip {
+    width: calc(100vw - 48px);
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+}
