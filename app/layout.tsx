@@ -49,7 +49,7 @@ export default function RootLayout({
           aria-hidden="true"
           tabIndex={-1}
         />
-        <script src="claytone-enhancements.js" defer />
+        <script src="claytone-enhancements.js?v=20260813-2" defer />
         <script
           type="text/javascript"
           src="//w962951.yclients.com/widgetJS"
