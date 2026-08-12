@@ -33,6 +33,25 @@ jobs:
       - name: Remove old exported Next assets
         run: rm -rf public/_next
 
+      - name: Ignore hosting-only TypeScript files for Pages build
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'tsconfig.json';
+          const config = JSON.parse(fs.readFileSync(path, 'utf8'));
+          config.exclude = [
+            ...(config.exclude || []),
+            'db/**',
+            'worker/**',
+            'examples/**',
+            'build/**',
+            'drizzle/**',
+            'drizzle.config.ts',
+            'vite.config.ts'
+          ];
+          fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
+          NODE
+
       - name: Build static site
         run: npx next build
 
