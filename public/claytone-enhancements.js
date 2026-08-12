@@ -1,18 +1,22 @@
 (() => {
+  const scriptUrl = document.currentScript?.src || window.location.href;
+  const siteBase = new URL("./", scriptUrl);
+  const assetUrl = (name) => new URL(`assets/${name}`, siteBase).href;
+
   const workMap = new Map([
-    ["work-01.webp", ["/assets/gallery-new-01.webp", "Работа ClayTone — комбинированный дизайн ногтей"]],
-    ["work-02.webp", ["/assets/gallery-new-02.webp", "Работа ClayTone — глубокий винный маникюр"]],
-    ["work-03.webp", ["/assets/gallery-new-03.webp", "Работа ClayTone — розовый миндаль с деликатным дизайном"]],
-    ["work-04.webp", ["/assets/gallery-new-04.webp", "Работа ClayTone — светло-голубой маникюр"]],
-    ["work-05.webp", ["/assets/gallery-new-05.webp", "Работа ClayTone — натуральный нюдовый маникюр"]],
-    ["work-06.webp", ["/assets/work-01.webp", "Работа Нонны — нежный маникюр с тонким френчем"]],
-    ["work-07.webp", ["/assets/work-02.webp", "Работа Нонны — аккуратный нюдовый маникюр"]],
-    ["mobile-work-french.webp", ["/assets/work-03.webp", "Работа Нонны — розовый маникюр мягкой формы"]],
-    ["mobile-work-pearl.webp", ["/assets/work-04.webp", "Работа Нонны — молочный френч"]],
-    ["mobile-work-wine.webp", ["/assets/work-05.webp", "Работа Нонны — натуральный розовый маникюр"]],
-    ["portfolio-french.webp", ["/assets/work-06.webp", "Работа Нонны — маникюр винного оттенка"]],
-    ["portfolio-pearl.webp", ["/assets/work-07.webp", "Работа Нонны — графичный тёмный дизайн"]],
-    ["portfolio-wine.webp", ["/assets/mobile-work-french.webp", "Работа Нонны — чистый френч на мягком квадрате"]],
+    ["work-01.webp", ["gallery-new-01.webp", "Работа ClayTone — комбинированный дизайн ногтей"]],
+    ["work-02.webp", ["gallery-new-02.webp", "Работа ClayTone — глубокий винный маникюр"]],
+    ["work-03.webp", ["gallery-new-03.webp", "Работа ClayTone — розовый миндаль с деликатным дизайном"]],
+    ["work-04.webp", ["gallery-new-04.webp", "Работа ClayTone — светло-голубой маникюр"]],
+    ["work-05.webp", ["gallery-new-05.webp", "Работа ClayTone — натуральный нюдовый маникюр"]],
+    ["work-06.webp", ["work-01.webp", "Работа Нонны — нежный маникюр с тонким френчем"]],
+    ["work-07.webp", ["work-02.webp", "Работа Нонны — аккуратный нюдовый маникюр"]],
+    ["mobile-work-french.webp", ["work-03.webp", "Работа Нонны — розовый маникюр мягкой формы"]],
+    ["mobile-work-pearl.webp", ["work-04.webp", "Работа Нонны — молочный френч"]],
+    ["mobile-work-wine.webp", ["work-05.webp", "Работа Нонны — натуральный розовый маникюр"]],
+    ["portfolio-french.webp", ["work-06.webp", "Работа Нонны — маникюр винного оттенка"]],
+    ["portfolio-pearl.webp", ["work-07.webp", "Работа Нонны — графичный тёмный дизайн"]],
+    ["portfolio-wine.webp", ["mobile-work-french.webp", "Работа Нонны — чистый френч на мягком квадрате"]],
   ]);
 
   const basename = (src) => {
@@ -29,9 +33,27 @@
       const replacement = workMap.get(basename(img.getAttribute("src") || img.src));
       if (!replacement) return;
       img.dataset.claytoneGalleryUpdated = "1";
-      img.src = replacement[0];
+      img.src = assetUrl(replacement[0]);
       img.alt = replacement[1];
     });
+  };
+
+  const enhancePromotions = () => {
+    const cards = document.querySelectorAll(".mct-promotion-card");
+    const firstImage = cards[0]?.querySelector("img");
+    const secondImage = cards[1]?.querySelector("img");
+
+    if (firstImage && firstImage.dataset.claytonePromoUpdated !== "1") {
+      firstImage.dataset.claytonePromoUpdated = "1";
+      firstImage.src = assetUrl("promotion-loyalty-2026.webp");
+      firstImage.alt = "Карточки благодарности и лояльности ClayTone";
+    }
+
+    if (secondImage && secondImage.dataset.claytonePromoUpdated !== "1") {
+      secondImage.dataset.claytonePromoUpdated = "1";
+      secondImage.src = assetUrl("promotion-combo-2026.webp");
+      secondImage.alt = "Маникюр и педикюр ClayTone в одной записи";
+    }
   };
 
   const enhanceServices = () => {
@@ -44,6 +66,65 @@
       title.setAttribute("tabindex", "0");
       title.setAttribute("aria-label", `${title.textContent || "Услуга"}. Открыть запись`);
     });
+  };
+
+  const dispatchGalleryPointer = (viewport, type, clientX) => {
+    if (typeof PointerEvent !== "function") return;
+    viewport.dispatchEvent(new PointerEvent(type, {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      pointerId: 77,
+      pointerType: "touch",
+      isPrimary: true,
+      clientX,
+      clientY: 0,
+    }));
+  };
+
+  const enhanceDesktopGallery = () => {
+    if (!window.matchMedia("(min-width: 768px)").matches) return;
+    const viewport = document.querySelector(".dct-gallery-viewport");
+    if (!viewport || viewport.dataset.claytoneTrackpad === "1") return;
+    viewport.dataset.claytoneTrackpad = "1";
+
+    // React pauses this row on simple mouse hover. Stop those delegated hover events
+    // so the strip keeps moving until the user actually scrolls it.
+    const blockHoverDelegation = (event) => event.stopPropagation();
+    viewport.addEventListener("mouseover", blockHoverDelegation, true);
+    viewport.addEventListener("mouseout", blockHoverDelegation, true);
+
+    // Reset a possible paused state left by an early hover during hydration.
+    window.setTimeout(() => dispatchGalleryPointer(viewport, "pointerup", 0), 0);
+
+    let gestureActive = false;
+    let virtualX = 0;
+    let releaseTimer = 0;
+
+    viewport.addEventListener("wheel", (event) => {
+      const horizontalDelta = Math.abs(event.deltaX) > 0.6
+        ? event.deltaX
+        : event.shiftKey ? event.deltaY : 0;
+      if (!horizontalDelta) return;
+
+      event.preventDefault();
+
+      if (!gestureActive) {
+        gestureActive = true;
+        virtualX = 0;
+        dispatchGalleryPointer(viewport, "pointerdown", virtualX);
+      }
+
+      virtualX -= horizontalDelta * 1.15;
+      dispatchGalleryPointer(viewport, "pointermove", virtualX);
+
+      window.clearTimeout(releaseTimer);
+      releaseTimer = window.setTimeout(() => {
+        dispatchGalleryPointer(viewport, "pointerup", virtualX);
+        gestureActive = false;
+        virtualX = 0;
+      }, 180);
+    }, { passive: false });
   };
 
   const ensureLightbox = () => {
@@ -105,7 +186,9 @@
 
   const run = () => {
     enhanceGalleryImages();
+    enhancePromotions();
     enhanceServices();
+    enhanceDesktopGallery();
   };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, { once: true });
