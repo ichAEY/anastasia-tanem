@@ -9,6 +9,7 @@ import "./globals.css";
 import "./desktop-claytone.css";
 import "./desktop-performance.css";
 import "./claytone-refinement.css";
+import "./site-tuning.css";
 
 export const metadata: Metadata = {
   title: "Нонна | ClayTone Nail Studio",
@@ -49,7 +50,7 @@ export default function RootLayout({
           aria-hidden="true"
           tabIndex={-1}
         />
-        <script src="claytone-enhancements.js?v=20260813-7" defer />
+        <script src="claytone-enhancements.js?v=20260813-8" defer />
         <script
           type="text/javascript"
           src="//w962951.yclients.com/widgetJS"
