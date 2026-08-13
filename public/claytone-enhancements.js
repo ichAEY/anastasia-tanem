@@ -71,16 +71,27 @@
     }
   };
 
-  const dispatchPointer = (viewport, type, clientX = 0) => {
+  const dispatchPointer = (viewport, type, clientX = 0, pointerType = "touch") => {
     if (typeof PointerEvent !== "function") return;
     viewport.dispatchEvent(new PointerEvent(type, {
       bubbles: true,
       cancelable: true,
       composed: true,
       pointerId: 77,
-      pointerType: "touch",
+      pointerType,
       isPrimary: true,
       clientX,
+      clientY: 0,
+    }));
+  };
+
+  const dispatchMouseTransition = (viewport, type, relatedTarget) => {
+    viewport.dispatchEvent(new MouseEvent(type, {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      relatedTarget,
+      clientX: 0,
       clientY: 0,
     }));
   };
@@ -91,14 +102,63 @@
     if (!viewport || viewport.dataset.claytoneTrackpad === "1") return;
     viewport.dataset.claytoneTrackpad = "1";
 
-    const blockHoverDelegation = (event) => event.stopPropagation();
-    viewport.addEventListener("mouseover", blockHoverDelegation, true);
-    viewport.addEventListener("mouseout", blockHoverDelegation, true);
-    window.setTimeout(() => dispatchPointer(viewport, "pointerup"), 0);
-
     let gestureActive = false;
     let virtualX = 0;
     let releaseTimer = 0;
+    let dragStartX = null;
+    let dragged = false;
+    let manualResumeTimer = 0;
+    let manualCooldown = false;
+
+    const cancelHoverPause = (event) => {
+      if (manualCooldown) return;
+      if (event.relatedTarget instanceof Node && viewport.contains(event.relatedTarget)) return;
+      window.setTimeout(() => dispatchPointer(viewport, "pointerup", 0, "mouse"), 0);
+    };
+
+    viewport.addEventListener("mouseover", cancelHoverPause);
+
+    viewport.addEventListener("pointerdown", (event) => {
+      if (event.pointerType !== "mouse" || !event.isPrimary) return;
+      window.clearTimeout(manualResumeTimer);
+      dragStartX = event.clientX;
+      dragged = false;
+      manualCooldown = false;
+    });
+
+    viewport.addEventListener("pointermove", (event) => {
+      if (event.pointerType !== "mouse" || dragStartX === null || !(event.buttons & 1)) return;
+      if (Math.abs(event.clientX - dragStartX) > 7) dragged = true;
+    });
+
+    viewport.addEventListener("pointerup", (event) => {
+      if (event.pointerType !== "mouse" || !event.isPrimary) return;
+      const shouldDelay = dragged;
+      dragStartX = null;
+      dragged = false;
+      if (!shouldDelay) return;
+
+      manualCooldown = true;
+      window.setTimeout(() => {
+        dispatchMouseTransition(viewport, "mouseover", null);
+      }, 0);
+
+      window.clearTimeout(manualResumeTimer);
+      manualResumeTimer = window.setTimeout(() => {
+        dispatchMouseTransition(viewport, "mouseout", document.body);
+        dispatchPointer(viewport, "pointerup", event.clientX, "mouse");
+        manualCooldown = false;
+      }, 1000);
+    });
+
+    viewport.addEventListener("pointercancel", () => {
+      dragStartX = null;
+      dragged = false;
+      manualCooldown = false;
+      window.clearTimeout(manualResumeTimer);
+    });
+
+    window.setTimeout(() => dispatchPointer(viewport, "pointerup", 0, "mouse"), 0);
 
     viewport.addEventListener("wheel", (event) => {
       const horizontalDelta = Math.abs(event.deltaX) > 0.6
@@ -121,7 +181,7 @@
         dispatchPointer(viewport, "pointerup", virtualX);
         gestureActive = false;
         virtualX = 0;
-      }, 170);
+      }, 1000);
     }, { passive: false });
   };
 
