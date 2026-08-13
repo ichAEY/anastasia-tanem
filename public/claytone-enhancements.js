@@ -61,13 +61,13 @@
     const secondImage = cards[1]?.querySelector("img");
 
     if (firstImage) {
-      firstImage.src = assetUrl("promotion-loyalty-2026.webp");
-      firstImage.alt = "Карточки благодарности и лояльности ClayTone";
+      firstImage.src = assetUrl("photohh1.jpg");
+      firstImage.alt = "Первая акция ClayTone";
     }
 
     if (secondImage) {
-      secondImage.src = assetUrl("promotion-combo-2026.webp");
-      secondImage.alt = "Маникюр и педикюр ClayTone в одной записи";
+      secondImage.src = assetUrl("photohh2.jpg");
+      secondImage.alt = "Вторая акция ClayTone";
     }
   };
 
