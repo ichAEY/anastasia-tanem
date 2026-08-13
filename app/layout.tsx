@@ -75,6 +75,7 @@ export default function RootLayout({
           tabIndex={-1}
         />
         <script src="claytone-enhancements.js?v=20260813-8" defer />
+        <script src="android-scroll-fix.js?v=20260813-1" defer />
         <script
           type="text/javascript"
           src="//w962951.yclients.com/widgetJS"
