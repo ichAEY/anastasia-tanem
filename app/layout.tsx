@@ -10,6 +10,7 @@ import "./desktop-claytone.css";
 import "./desktop-performance.css";
 import "./claytone-refinement.css";
 import "./site-tuning.css";
+import "./android-scroll-safety.css";
 
 export const metadata: Metadata = {
   title: "Нонна | ClayTone Nail Studio",
@@ -75,7 +76,7 @@ export default function RootLayout({
           tabIndex={-1}
         />
         <script src="claytone-enhancements.js?v=20260813-8" defer />
-        <script src="android-scroll-fix.js?v=20260813-1" defer />
+        <script src="android-scroll-fix.js?v=20260813-2" defer />
         <script
           type="text/javascript"
           src="//w962951.yclients.com/widgetJS"
