@@ -1,0 +1,84 @@
+/* Targeted UI refinements requested 2026-08-13. */
+
+@media (max-width: 767px) {
+  /* Make the visit amenities easier to scan without changing the block hierarchy. */
+  .mct-amenities {
+    padding: 19px 18px 20px;
+  }
+
+  .mct-amenities-grid article {
+    min-height: 94px;
+    padding-top: 18px;
+  }
+
+  .mct-amenities-grid article:last-child {
+    min-height: 78px;
+    padding-top: 17px;
+    padding-bottom: 7px;
+  }
+
+  .mct-amenities-grid strong {
+    font-size: 21px;
+    line-height: 1.04;
+  }
+
+  .mct-amenities-grid span {
+    margin-top: 7px;
+    font-size: 9.2px;
+    line-height: 1.45;
+  }
+
+  /* Booking CTA should align exactly with the contact grid below it. */
+  .mct-final-cta {
+    width: 100%;
+    margin-inline: 0;
+  }
+
+  /* Both promotion cards acknowledge a touch with a restrained full-card scale. */
+  .mct-promotion-card {
+    transform-origin: center;
+    transition: transform 145ms cubic-bezier(.22, .78, .25, 1), box-shadow 145ms ease;
+  }
+
+  .mct-promotion-card:active {
+    animation-play-state: paused !important;
+    transform: scale(1.018) !important;
+    box-shadow: 0 18px 42px rgba(79, 58, 50, .13);
+  }
+
+  /* Strengthen the three summary phrases under the master description. */
+  .mct-about-list li {
+    padding-top: 12px;
+    font-size: 13px;
+    line-height: 1.34;
+  }
+}
+
+@media (min-width: 768px) {
+  /* The map is no longer presented as a card inside a card. */
+  .mct-visit {
+    padding-bottom: 38px;
+  }
+
+  .mct-visit-details {
+    min-height: 780px;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .mct-visit-address {
+    padding: 8px 0 24px;
+    border-bottom: 0;
+  }
+
+  .mct-map-wrap {
+    width: 100%;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
