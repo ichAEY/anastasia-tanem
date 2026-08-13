@@ -3,12 +3,13 @@
   const siteBase = new URL("./", scriptUrl);
   const assetUrl = (name) => new URL(`assets/${name}`, siteBase).href;
 
-  const galleryReplacements = new Map([
-    ["work-01.webp", ["gallery-hq-01-20260813.webp", "Работа ClayTone — комбинированный дизайн ногтей"]],
-    ["work-02.webp", ["gallery-hq-02-20260813.webp", "Работа ClayTone — глубокий винный маникюр"]],
-    ["work-03.webp", ["gallery-hq-03-20260813.webp", "Работа ClayTone — розовый миндаль с деликатным дизайном"]],
-    ["work-04.webp", ["gallery-hq-04-20260813.webp", "Работа ClayTone — светло-голубой маникюр"]],
-    ["work-05.webp", ["gallery-hq-05-20260813.webp", "Работа ClayTone — натуральный нюдовый маникюр"]],
+  const mobileGalleryReplacements = new Map([
+    ["work-01.webp", ["photo1.jpg", "Работа ClayTone — новое фото 1"]],
+    ["work-02.webp", ["photo2.jpg", "Работа ClayTone — новое фото 2"]],
+    ["work-03.webp", ["photo3.jpg", "Работа ClayTone — новое фото 3"]],
+    ["work-04.webp", ["photo4.jpg", "Работа ClayTone — новое фото 4"]],
+    ["work-05.webp", ["photo5.jpg", "Работа ClayTone — новое фото 5"]],
+    ["portfolio-wine.webp", ["photo6.jpg", "Работа ClayTone — новое фото 6"]],
   ]);
 
   const basename = (src) => {
@@ -19,14 +20,40 @@
     }
   };
 
+  const replaceMobileGalleryImage = (img) => {
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    const replacement = mobileGalleryReplacements.get(
+      basename(img.getAttribute("src") || img.src)
+    );
+    if (!replacement) return;
+    img.src = assetUrl(replacement[0]);
+    img.alt = replacement[1];
+  };
+
   const enhanceGalleryPhotos = () => {
-    document.querySelectorAll("img").forEach((img) => {
-      const replacement = galleryReplacements.get(
-        basename(img.getAttribute("src") || img.src)
-      );
-      if (!replacement) return;
-      img.src = assetUrl(replacement[0]);
-      img.alt = replacement[1];
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    document.querySelectorAll("img").forEach(replaceMobileGalleryImage);
+  };
+
+  const observeGalleryPhotos = () => {
+    if (!window.matchMedia("(max-width: 767px)").matches || !("MutationObserver" in window)) return;
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (!(node instanceof Element)) return;
+          if (node.matches("img")) replaceMobileGalleryImage(node);
+          node.querySelectorAll?.("img").forEach(replaceMobileGalleryImage);
+        });
+        if (mutation.type === "attributes" && mutation.target instanceof HTMLImageElement) {
+          replaceMobileGalleryImage(mutation.target);
+        }
+      });
+    });
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["src"],
     });
   };
 
@@ -132,6 +159,7 @@
 
   const run = () => {
     enhanceGalleryPhotos();
+    observeGalleryPhotos();
     enhancePromotions();
     enhanceDesktopGallery();
     pauseMovingRowsOffscreen();
