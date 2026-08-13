@@ -3,7 +3,7 @@
   const siteBase = new URL("./", scriptUrl);
   const assetUrl = (name) => new URL(`assets/${name}`, siteBase).href;
 
-  const mobileGalleryReplacements = new Map([
+  const galleryReplacements = new Map([
     ["work-01.webp", ["photo1.jpg", "Работа ClayTone — новое фото 1"]],
     ["work-02.webp", ["photo2.jpg", "Работа ClayTone — новое фото 2"]],
     ["work-03.webp", ["photo3.jpg", "Работа ClayTone — новое фото 3"]],
@@ -20,9 +20,8 @@
     }
   };
 
-  const replaceMobileGalleryImage = (img) => {
-    if (!window.matchMedia("(max-width: 767px)").matches) return;
-    const replacement = mobileGalleryReplacements.get(
+  const replaceGalleryImage = (img) => {
+    const replacement = galleryReplacements.get(
       basename(img.getAttribute("src") || img.src)
     );
     if (!replacement) return;
@@ -31,21 +30,20 @@
   };
 
   const enhanceGalleryPhotos = () => {
-    if (!window.matchMedia("(max-width: 767px)").matches) return;
-    document.querySelectorAll("img").forEach(replaceMobileGalleryImage);
+    document.querySelectorAll("img").forEach(replaceGalleryImage);
   };
 
   const observeGalleryPhotos = () => {
-    if (!window.matchMedia("(max-width: 767px)").matches || !("MutationObserver" in window)) return;
+    if (!("MutationObserver" in window)) return;
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
           if (!(node instanceof Element)) return;
-          if (node.matches("img")) replaceMobileGalleryImage(node);
-          node.querySelectorAll?.("img").forEach(replaceMobileGalleryImage);
+          if (node.matches("img")) replaceGalleryImage(node);
+          node.querySelectorAll?.("img").forEach(replaceGalleryImage);
         });
         if (mutation.type === "attributes" && mutation.target instanceof HTMLImageElement) {
-          replaceMobileGalleryImage(mutation.target);
+          replaceGalleryImage(mutation.target);
         }
       });
     });
