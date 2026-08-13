@@ -55,13 +55,11 @@
 }
 
 @media (min-width: 768px) {
-  /* The map is no longer presented as a card inside a card. */
   .mct-visit {
     padding-bottom: 38px;
   }
 
   .mct-visit-details {
-    min-height: 780px;
     overflow: visible;
     border: 0;
     border-radius: 0;
@@ -70,57 +68,127 @@
   }
 
   .mct-visit-address {
-    padding: 8px 0 24px;
     border-bottom: 0;
-  }
-
-  .mct-map-wrap {
-    width: 100%;
-    overflow: hidden;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
   }
 }
 
-/* Final location treatment: no embedded map, no replacement card, only the native address. */
+/*
+ * Final location treatment:
+ * - no embedded map is visible or interactive;
+ * - no replacement card, icon or decorative target;
+ * - the native address itself remains the only visible location element;
+ * - the existing route link is stretched invisibly over the address so the
+ *   whole address remains clickable without adding visual noise.
+ */
 html body .mct-map-wrap {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 3 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+
+html body .mct-map-wrap iframe {
   display: none !important;
+}
+
+html body .mct-map-wrap > a {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 4 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  text-decoration: none !important;
+  backdrop-filter: none !important;
+  pointer-events: auto !important;
+}
+
+html body .mct-map-wrap > a::before,
+html body .mct-map-wrap > a::after {
+  display: none !important;
+  content: none !important;
 }
 
 @media (max-width: 767px) {
   html body .mct-visit-details {
+    position: relative !important;
+    width: calc(100% - 14px) !important;
     min-height: 0 !important;
-    margin-top: 22px !important;
-    padding-top: 20px !important;
-    padding-bottom: 34px !important;
+    margin: 17px 0 0 7px !important;
+    padding: 16px 0 21px !important;
     border-top: 1px solid rgba(255, 255, 255, .14) !important;
     background: transparent !important;
     box-shadow: none !important;
   }
 
   html body .mct-visit-address {
+    position: relative;
+    z-index: 1;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 0 4px !important;
+    line-height: 1.17 !important;
+  }
+
+  html body .mct-visit-address span {
+    margin-top: 2px;
   }
 }
 
 @media (min-width: 768px) {
+  html body .mct-visit > .mct-shell {
+    grid-template-columns: minmax(560px, 1.15fr) minmax(440px, .85fr) !important;
+    gap: clamp(34px, 4.2vw, 66px) !important;
+    align-items: center !important;
+  }
+
   html body .mct-visit-details {
+    position: relative !important;
     display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
     min-height: 0 !important;
     align-items: center !important;
-    align-self: stretch !important;
-    padding: 0 0 0 clamp(34px, 3.2vw, 54px) !important;
+    align-self: center !important;
+    padding: 0 !important;
     border: 0 !important;
-    border-left: 1px solid rgba(255, 255, 255, .14) !important;
+    border-left: 0 !important;
     background: transparent !important;
     box-shadow: none !important;
   }
 
   html body .mct-visit-address {
-    max-width: 520px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
+    font-size: clamp(25px, 2vw, 33px) !important;
+    line-height: 1.12 !important;
+    white-space: nowrap;
+  }
+
+  html body .mct-visit-address span {
+    display: block;
+    margin-top: 9px;
+    white-space: normal;
   }
 }
