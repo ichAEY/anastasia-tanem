@@ -55,11 +55,6 @@ jobs:
       - name: Build static site
         run: npx next build
 
-      - name: Fix absolute public asset paths for project Pages
-        run: |
-          find out -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' -o -name '*.json' -o -name '*.txt' \) -print0 | \
-          xargs -0 sed -i 's#"/assets/#"/claytone-current/assets/#g; s#'"'"'/assets/#'"'"'/claytone-current/assets/#g; s#url(/assets/#url(/claytone-current/assets/#g; s#url("/assets/#url("/claytone-current/assets/#g; s#url('"'"'/assets/#url('"'"'/claytone-current/assets/#g'
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
