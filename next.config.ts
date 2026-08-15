@@ -6,7 +6,6 @@ const nextConfig: NextConfig = {
   ...(isGitHubPages
     ? {
         output: "export",
-        basePath: "/claytone-current",
         trailingSlash: true,
         images: { unoptimized: true },
       }
