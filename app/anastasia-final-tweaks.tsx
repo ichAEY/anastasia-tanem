@@ -26,7 +26,6 @@ function applyFinalTweaks() {
   const assetBase = window.location.hostname.endsWith("github.io") ? "/anastasia-tanem" : "";
   const originalsBase = `${assetBase}/assets/anastasia-originals/anastasia-originals`;
   const galleryUrls = galleryOriginals.map((filename) => `${originalsBase}/${filename}`);
-
   const portfolioButtons = Array.from(root.querySelectorAll<HTMLButtonElement>("#mobile-portfolio .mct-work-tile, #mobile-portfolio .dct-film-frame"));
   portfolioButtons.forEach((button, index) => {
     const image = button.querySelector<HTMLImageElement>("img");
@@ -47,7 +46,6 @@ function applyFinalTweaks() {
       }, true);
     }
   });
-
   const galleryContent = root.querySelector<HTMLElement>(".mct-gallery-content");
   if (galleryContent) {
     galleryContent.querySelectorAll<HTMLElement>(".mct-gallery-ba").forEach((el) => el.remove());
@@ -64,7 +62,6 @@ function applyFinalTweaks() {
       `).join("");
     }
   }
-
   const about = root.querySelector<HTMLElement>("#mobile-about");
   const aboutFigure = about?.querySelector<HTMLElement>(".mct-about-portrait");
   const aboutImage = aboutFigure?.querySelector<HTMLImageElement>("img");
@@ -75,7 +72,6 @@ function applyFinalTweaks() {
     aboutImage.loading = "lazy";
     aboutImage.decoding = "async";
   }
-
   const firstPromoImage = root.querySelector<HTMLImageElement>("#mobile-promotions .mct-promotion-card:first-child figure img");
   if (firstPromoImage) {
     firstPromoImage.src = `${originalsBase}/anastasia-actia1.png`;
@@ -83,7 +79,6 @@ function applyFinalTweaks() {
     firstPromoImage.loading = "lazy";
     firstPromoImage.decoding = "async";
   }
-
   const booking = root.querySelector<HTMLElement>("#mobile-booking");
   const bookingTitle = booking?.querySelector<HTMLElement>("h3");
   if (bookingTitle) bookingTitle.innerHTML = "Запись через WhatsApp<br /><em>напрямую у мастера</em>";
