@@ -1,9 +1,7 @@
 .anastasia-site {
-  visibility: hidden;
-}
-
-.anastasia-site.is-ready {
   visibility: visible;
+  width: 100%;
+  min-height: 100%;
 }
 
 .anastasia-site .anastasia-hide {
@@ -68,6 +66,17 @@
 .anastasia-site #mobile-portfolio img,
 .anastasia-site #mobile-promotions img {
   object-fit: cover;
+}
+
+html,
+body,
+.site-root,
+.anastasia-site {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-y: auto !important;
 }
 
 @media (max-width: 760px) {
