@@ -68,7 +68,60 @@ jobs:
       - name: Remove old exported Next assets
         run: rm -rf public/_next
 
-      - name: Personalize preloader source
+      - name: Optimize Anastasia images
+        run: |
+          npm install --no-save --no-package-lock sharp
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const sharp = require('sharp');
+
+          const inputDir = 'public/assets/anastasia-originals/anastasia-originals';
+          const outputDir = 'public/assets/anastasia-optimized';
+          fs.mkdirSync(outputDir, { recursive: true });
+
+          const gallery = [
+            'anastasia-photo1.png',
+            'anastasia-photo3.png',
+            'anastasia-photo4.png',
+            'anastasia-photo5.png',
+            'anastasia-photo6.png',
+            'anastasia-photo7.png',
+            'anastasia-photo8.png',
+            'anastasia-photo9.png',
+            'anastasia-photo10.png',
+            'anastasia-photo11.png',
+            'anastasia-photo12.png',
+            'anastasia-photo13.png',
+          ];
+
+          async function optimize(filename, maxSize = 1500, quality = 86) {
+            const source = path.join(inputDir, filename);
+            if (!fs.existsSync(source)) {
+              console.warn(`Missing image: ${source}`);
+              return;
+            }
+            const output = path.join(outputDir, filename.replace(/\.[^.]+$/, '.webp'));
+            await sharp(source)
+              .rotate()
+              .resize({ width: maxSize, height: maxSize, fit: 'inside', withoutEnlargement: true })
+              .webp({ quality, effort: 5, smartSubsample: true })
+              .toFile(output);
+            const kb = Math.round(fs.statSync(output).size / 1024);
+            console.log(`${filename} -> ${path.basename(output)} (${kb} KB)`);
+          }
+
+          (async () => {
+            for (const filename of gallery) await optimize(filename, 1500, 86);
+            await optimize('anastasia-actia1.png', 1600, 86);
+            await optimize('anastasia-omastere.png', 1600, 87);
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+
+      - name: Personalize desktop and preloader source
         run: |
           node - <<'NODE'
           const fs = require('fs');
@@ -76,7 +129,10 @@ jobs:
           let source = fs.readFileSync(path, 'utf8');
           source = source
             .replace('<span>ClayTone</span>', '<span>A</span>')
-            .replace('<small>Nail studio</small>', '<small>ANASTASIA</small>');
+            .replace('<small>Nail studio</small>', '<small>ANASTASIA</small>')
+            .replace('src="/assets/nonna-portrait.jpeg"', 'src="/assets/anastasia-optimized/anastasia-omastere.webp"')
+            .replace('alt="Нонна, мастер ногтевого сервиса ClayTone"', 'alt="Анастасия — мастер бьюти-сервиса"')
+            .replace('<figcaption><span>ClayTone</span><small>Индивидуальная работа мастера</small></figcaption>', '<figcaption><span>Анастасия</span><small>10 лет опыта</small></figcaption>');
           fs.writeFileSync(path, source);
           NODE
 
