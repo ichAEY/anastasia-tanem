@@ -14,7 +14,7 @@
   width: auto !important;
   min-width: 0 !important;
   min-height: 39px !important;
-  padding: 0 14px !important;
+  padding: 0 13px !important;
   border-radius: 999px !important;
   background: transparent !important;
   color: #5b5653 !important;
@@ -26,6 +26,81 @@
   background: #fff !important;
   color: var(--ink) !important;
   box-shadow: 0 3px 12px rgba(69, 54, 48, .07) !important;
+}
+
+.anastasia-site .anastasia-service-list {
+  width: 100%;
+}
+
+.anastasia-site .anastasia-service-list .mct-service-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: start !important;
+  column-gap: 26px !important;
+  row-gap: 0 !important;
+  min-height: 0 !important;
+  padding: 16px 4px !important;
+}
+
+.anastasia-site .anastasia-service-list .mct-service-name {
+  min-width: 0 !important;
+}
+
+.anastasia-site .anastasia-service-list .mct-service-name strong {
+  display: block !important;
+  margin: 0 !important;
+  color: var(--ink) !important;
+  font: 600 15px/1.25 "Manrope", Arial, sans-serif !important;
+  letter-spacing: -.015em !important;
+}
+
+.anastasia-site .anastasia-service-list .dct-service-description {
+  max-width: 620px !important;
+  margin: 5px 0 0 !important;
+  color: rgba(69, 54, 48, .58) !important;
+  font: 500 11px/1.45 "Manrope", Arial, sans-serif !important;
+  letter-spacing: .005em !important;
+}
+
+.anastasia-site .anastasia-service-list .mct-service-action {
+  display: grid !important;
+  justify-items: end !important;
+  align-content: start !important;
+  gap: 6px !important;
+  min-width: 116px !important;
+  padding: 0 !important;
+  text-align: right !important;
+}
+
+.anastasia-site .anastasia-service-list .mct-service-action b {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: var(--ink) !important;
+  font: 600 15px/1.25 "Manrope", Arial, sans-serif !important;
+  letter-spacing: -.015em !important;
+  white-space: nowrap !important;
+}
+
+.anastasia-site .anastasia-service-list .mct-service-action a {
+  margin: 0 !important;
+  font-size: 10.5px !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+}
+
+.anastasia-site .anastasia-service-group {
+  margin: 28px 0 2px !important;
+  padding: 0 4px 10px !important;
+  border-bottom: 1px solid rgba(69, 54, 48, .12);
+  color: rgba(69, 54, 48, .48);
+  font: 700 9.5px/1 "Manrope", Arial, sans-serif;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.anastasia-site .anastasia-service-group:first-child {
+  margin-top: 8px !important;
 }
 
 .anastasia-site #mobile-about .mct-about-portrait {
@@ -45,36 +120,177 @@
   object-position: center !important;
 }
 
-.anastasia-site .mct-gallery-works a.mct-gallery-image {
+.anastasia-site .mct-gallery-works button.mct-gallery-image,
+.anastasia-site .mct-gallery-works button.anastasia-gallery-image {
   display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
   overflow: hidden;
   border: 0;
   background: transparent;
   cursor: zoom-in;
 }
 
-.anastasia-site .mct-gallery-works a.mct-gallery-image img {
+.anastasia-site .mct-gallery-works button.mct-gallery-image img,
+.anastasia-site .mct-gallery-works button.anastasia-gallery-image img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+body.anastasia-lightbox-open {
+  overflow: hidden !important;
+}
+
+.anastasia-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 34px 70px 70px;
+  background: rgba(20, 17, 16, .94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  outline: none;
+}
+
+.anastasia-lightbox.is-open {
+  display: flex;
+}
+
+.anastasia-lightbox-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(1180px, 88vw);
+  height: min(82vh, 920px);
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.anastasia-lightbox-image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transform-origin: center center;
+  transition: transform 180ms ease;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: zoom-in;
+}
+
+.anastasia-lightbox-image.is-zoomed {
+  cursor: zoom-out;
+}
+
+.anastasia-lightbox-close,
+.anastasia-lightbox-nav,
+.anastasia-lightbox-tools button {
+  border: 0;
+  background: rgba(255, 255, 255, .11);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.anastasia-lightbox-close:hover,
+.anastasia-lightbox-nav:hover,
+.anastasia-lightbox-tools button:hover {
+  background: rgba(255, 255, 255, .20);
+}
+
+.anastasia-lightbox-close {
+  position: absolute;
+  top: 24px;
+  right: 26px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font: 300 29px/1 Arial, sans-serif;
+}
+
+.anastasia-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  width: 46px;
+  height: 66px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  font: 300 36px/1 Georgia, serif;
+}
+
+.anastasia-lightbox-nav.is-prev {
+  left: 22px;
+}
+
+.anastasia-lightbox-nav.is-next {
+  right: 22px;
+}
+
+.anastasia-lightbox-tools {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, .78);
+  font: 600 11px/1 "Manrope", Arial, sans-serif;
+}
+
+.anastasia-lightbox-tools button {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.anastasia-lightbox-counter {
+  min-width: 50px;
+  text-align: center;
+}
+
 @media (min-width: 768px) {
-  .anastasia-site .anastasia-tabs {
-    max-width: 760px !important;
-    margin: 18px auto 24px !important;
-    padding: 5px !important;
+  .anastasia-site .dct-hero-portrait {
+    overflow: hidden !important;
+    border-radius: 24px !important;
+    box-shadow: 0 24px 70px rgba(69, 54, 48, .12) !important;
   }
 
-  .anastasia-site .anastasia-tabs .mct-tab {
-    min-height: 42px !important;
-    padding: 0 20px !important;
+  .anastasia-site .dct-hero-portrait img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 460px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+
+  .anastasia-site .dct-hero-portrait figcaption {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .anastasia-site .anastasia-service-list .mct-service-row {
+    padding: 17px 8px !important;
+  }
+
+  .anastasia-site .anastasia-service-list .mct-service-name strong,
+  .anastasia-site .anastasia-service-list .mct-service-action b {
+    font-size: 15.5px !important;
+  }
+
+  .anastasia-site .anastasia-service-list .dct-service-description {
     font-size: 11.5px !important;
-  }
-
-  .anastasia-site #mobile-about .mct-about-portrait img {
-    aspect-ratio: 4/5 !important;
   }
 }
 
@@ -88,10 +304,8 @@
     overflow-y: hidden !important;
     border-radius: 0 !important;
     background: transparent !important;
-    scroll-snap-type: x proximity;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-inline: contain;
   }
 
   .anastasia-site .anastasia-tabs::-webkit-scrollbar {
@@ -100,17 +314,79 @@
 
   .anastasia-site .anastasia-tabs .mct-tab {
     flex: 0 0 auto !important;
-    width: auto !important;
     min-width: max-content !important;
     min-height: 38px !important;
     padding: 0 16px !important;
-    font-size: 10.5px !important;
-    scroll-snap-align: center;
     background: #eee5df !important;
+    font-size: 10.5px !important;
   }
 
   .anastasia-site .anastasia-tabs .mct-tab.is-active {
     background: #fff !important;
-    box-shadow: 0 3px 12px rgba(69, 54, 48, .10) !important;
+  }
+
+  .anastasia-site .anastasia-service-list .mct-service-row {
+    column-gap: 14px !important;
+    padding: 14px 0 !important;
+  }
+
+  .anastasia-site .anastasia-service-list .mct-service-name strong,
+  .anastasia-site .anastasia-service-list .mct-service-action b {
+    font-size: 13.5px !important;
+    line-height: 1.28 !important;
+  }
+
+  .anastasia-site .anastasia-service-list .dct-service-description {
+    margin-top: 4px !important;
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+  }
+
+  .anastasia-site .anastasia-service-list .mct-service-action {
+    min-width: 88px !important;
+    gap: 5px !important;
+  }
+
+  .anastasia-site .anastasia-service-list .mct-service-action a {
+    font-size: 9.5px !important;
+  }
+
+  .anastasia-site .anastasia-service-group {
+    margin-top: 22px !important;
+  }
+
+  .anastasia-lightbox {
+    padding: 56px 12px 72px;
+  }
+
+  .anastasia-lightbox-stage {
+    width: 100%;
+    height: 78vh;
+  }
+
+  .anastasia-lightbox-close {
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .anastasia-lightbox-nav {
+    width: 40px;
+    height: 58px;
+    background: rgba(20, 17, 16, .34);
+    font-size: 31px;
+  }
+
+  .anastasia-lightbox-nav.is-prev {
+    left: 8px;
+  }
+
+  .anastasia-lightbox-nav.is-next {
+    right: 8px;
+  }
+
+  .anastasia-lightbox-tools {
+    bottom: 16px;
   }
 }
