@@ -26,44 +26,54 @@ function applyFinalTweaks() {
 
   const assetBase = window.location.hostname.endsWith("github.io") ? "/anastasia-tanem" : "";
   const originalsBase = `${assetBase}/assets/anastasia-originals/anastasia-originals`;
+  const galleryUrls = galleryOriginals.map((filename) => `${originalsBase}/${filename}`);
 
-  // Use only Anastasia's uploaded source images in the visible portfolio.
-  const portfolioImages = Array.from(root.querySelectorAll<HTMLImageElement>(
-    "#mobile-portfolio .mct-work-grid img, #mobile-portfolio .dct-gallery-track img"
+  // Visible portfolio: only Anastasia's uploaded work photos.
+  const portfolioButtons = Array.from(root.querySelectorAll<HTMLButtonElement>(
+    "#mobile-portfolio .mct-work-tile, #mobile-portfolio .dct-film-frame"
   ));
-  portfolioImages.forEach((image, index) => {
-    const filename = galleryOriginals[index % galleryOriginals.length];
-    image.src = `${originalsBase}/${filename}`;
-    image.alt = `Работа Анастасии ${index % galleryOriginals.length + 1}`;
-    image.loading = "lazy";
-    image.decoding = "async";
+  portfolioButtons.forEach((button, index) => {
+    const image = button.querySelector<HTMLImageElement>("img");
+    const src = galleryUrls[index % galleryUrls.length];
+    if (image) {
+      image.src = src;
+      image.alt = `Работа Анастасии ${index % galleryUrls.length + 1}`;
+      image.loading = "lazy";
+      image.decoding = "async";
+    }
+
+    // Capture click before old React handlers so old Nonna images never open.
+    if (!button.dataset.anastasiaBound) {
+      button.dataset.anastasiaBound = "true";
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const currentImage = button.querySelector<HTMLImageElement>("img");
+        if (currentImage?.src) window.open(currentImage.src, "_blank", "noopener,noreferrer");
+      }, true);
+    }
   });
 
-  // Gallery overlay: remove the old before/after section and keep only Anastasia's 12 work photos.
+  // Gallery overlay: remove before/after completely and render exactly 12 uploaded works.
   const galleryContent = root.querySelector<HTMLElement>(".mct-gallery-content");
   if (galleryContent) {
     galleryContent.querySelectorAll<HTMLElement>(".mct-gallery-ba").forEach((el) => el.remove());
-    const headings = Array.from(galleryContent.querySelectorAll<HTMLElement>("h3"));
-    headings.forEach((heading) => {
+    Array.from(galleryContent.querySelectorAll<HTMLElement>("h3")).forEach((heading) => {
       if (heading.textContent?.toLowerCase().includes("до / после")) heading.remove();
     });
+
     const works = galleryContent.querySelector<HTMLElement>(".mct-gallery-works");
-    if (works) {
-      works.innerHTML = galleryOriginals.map((filename, index) => `
-        <button class="mct-gallery-image" type="button" aria-label="Открыть фотографию: Работа Анастасии ${index + 1}">
-          <img src="${originalsBase}/${filename}" alt="Работа Анастасии ${index + 1}" loading="lazy" decoding="async" />
-        </button>
+    if (works && works.dataset.anastasiaGallery !== "true") {
+      works.dataset.anastasiaGallery = "true";
+      works.innerHTML = galleryUrls.map((src, index) => `
+        <a class="mct-gallery-image" href="${src}" target="_blank" rel="noopener noreferrer" aria-label="Открыть фотографию: Работа Анастасии ${index + 1}">
+          <img src="${src}" alt="Работа Анастасии ${index + 1}" loading="lazy" decoding="async" />
+        </a>
       `).join("");
-      works.querySelectorAll<HTMLButtonElement>("button").forEach((button) => {
-        button.addEventListener("click", () => {
-          const img = button.querySelector<HTMLImageElement>("img");
-          if (img) window.open(img.src, "_blank", "noopener,noreferrer");
-        });
-      });
     }
   }
 
-  // About block: use only the photo uploaded by the user.
+  // About block: only the photo uploaded by the user.
   const about = root.querySelector<HTMLElement>("#mobile-about");
   const aboutFigure = about?.querySelector<HTMLElement>(".mct-about-portrait");
   const aboutImage = aboutFigure?.querySelector<HTMLImageElement>("img");
@@ -75,7 +85,7 @@ function applyFinalTweaks() {
     aboutImage.decoding = "async";
   }
 
-  // First promotion: use the user's chosen source image.
+  // First promotion: user's chosen image.
   const firstPromoImage = root.querySelector<HTMLImageElement>("#mobile-promotions .mct-promotion-card:first-child figure img");
   if (firstPromoImage) {
     firstPromoImage.src = `${originalsBase}/anastasia-actia1.png`;
@@ -84,15 +94,13 @@ function applyFinalTweaks() {
     firstPromoImage.decoding = "async";
   }
 
-  // Make the booking language match the real flow: direct WhatsApp contact.
+  // Booking language matches direct WhatsApp contact.
   const booking = root.querySelector<HTMLElement>("#mobile-booking");
   const bookingTitle = booking?.querySelector<HTMLElement>("h3");
   if (bookingTitle) bookingTitle.innerHTML = "Запись через WhatsApp<br /><em>напрямую у мастера</em>";
 
   const bookingCopy = booking?.querySelector<HTMLElement>(":scope > p");
-  if (bookingCopy) {
-    bookingCopy.textContent = "Нажмите кнопку — откроется чат с Анастасией и готовым сообщением «Здравствуйте, хочу записаться».";
-  }
+  if (bookingCopy) bookingCopy.textContent = "Нажмите кнопку — откроется чат с Анастасией и готовым сообщением «Здравствуйте, хочу записаться».";
 
   const finalCta = booking?.querySelector<HTMLAnchorElement>(".mct-final-cta");
   if (finalCta) {
