@@ -4,37 +4,92 @@
   min-height: 100%;
 }
 
+html,
+body,
+.anastasia-site,
+.anastasia-site .mct-mobile {
+  overflow-x: hidden;
+}
+
+html,
+body {
+  overflow-y: auto !important;
+}
+
 .anastasia-site .anastasia-hide {
   display: none !important;
 }
 
-.anastasia-site #mobile-prices .mct-tabs,
-.anastasia-site #mobile-prices .mct-service-list,
-.anastasia-site #mobile-prices .mct-shell > button {
+/* Intro must say Anastasia from the very first painted frame. */
+.anastasia-site .mct-intro-mark > span {
+  font-size: 0 !important;
+}
+
+.anastasia-site .mct-intro-mark > span::after {
+  content: "Анастасия";
+  font: 500 clamp(51px, 15vw, 70px)/1 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -.045em;
+}
+
+.anastasia-site .mct-intro-mark > small {
+  font-size: 0 !important;
+}
+
+.anastasia-site .mct-intro-mark > small::after {
+  content: "мастер ногтевого сервиса";
+  font: 600 9px/1 "Manrope", Arial, sans-serif;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+/* Keep only the actual work gallery, without the old before/after pair. */
+.anastasia-site #mobile-portfolio .mct-ba-stage,
+.anastasia-site .mct-gallery-content > h3:first-of-type,
+.anastasia-site .mct-gallery-ba {
+  display: none !important;
+}
+
+/* Native Nonna service switcher is replaced with Anastasia's 4-way switcher. */
+.anastasia-site #mobile-prices > .mct-shell > .mct-tabs,
+.anastasia-site #mobile-prices > .mct-shell > .mct-service-list,
+.anastasia-site #mobile-prices > .mct-shell > .mct-more-services {
   display: none !important;
 }
 
 .anastasia-services {
   display: grid;
-  gap: 34px;
+  gap: 0;
   margin-top: 28px;
 }
 
-.anastasia-service-group {
-  display: grid;
-  gap: 14px;
+.anastasia-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 0 18px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-.anastasia-service-group > h3 {
-  margin: 0;
-  font-size: clamp(22px, 3vw, 34px);
-  font-weight: 600;
-  letter-spacing: -0.03em;
+.anastasia-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.anastasia-tabs .mct-tab {
+  flex: 0 0 auto;
 }
 
 .anastasia-service-list {
   display: grid;
   gap: 0;
+}
+
+.anastasia-more-services {
+  margin-top: 18px !important;
+}
+
+.anastasia-more-services[hidden] {
+  display: none !important;
 }
 
 .anastasia-site #mobile-about .mct-about-portrait-wrap {
@@ -54,39 +109,16 @@
   margin: 0 auto !important;
 }
 
-.anastasia-site #mobile-portfolio .mct-ba-labels {
-  display: none !important;
-}
-
-.anastasia-site #mobile-portfolio button {
-  cursor: default !important;
-}
-
-.anastasia-site .mct-hero-visual img,
-.anastasia-site #mobile-portfolio img,
-.anastasia-site #mobile-promotions img {
-  object-fit: cover;
-}
-
-html,
-body,
-.site-root,
-.anastasia-site {
-  overflow-x: hidden;
-}
-
-body {
-  overflow-y: auto !important;
-}
-
 @media (max-width: 760px) {
   .anastasia-services {
-    gap: 26px;
     margin-top: 20px;
   }
 
-  .anastasia-service-group > h3 {
-    font-size: 24px;
+  .anastasia-tabs {
+    gap: 7px;
+    margin-right: calc(var(--mct-shell-pad) * -1);
+    padding-right: var(--mct-shell-pad);
+    padding-bottom: 16px;
   }
 
   .anastasia-site #mobile-about .mct-about-portrait-wrap {
