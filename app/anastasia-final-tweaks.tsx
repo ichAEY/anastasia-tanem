@@ -32,6 +32,11 @@ let touchOriginX = 0;
 let touchOriginY = 0;
 let pinchStartDistance = 0;
 let pinchStartScale = 1;
+let mousePanActive = false;
+let mouseStartX = 0;
+let mouseStartY = 0;
+let mouseOriginX = 0;
+let mouseOriginY = 0;
 
 function getLightbox() {
   return document.querySelector<HTMLElement>(".anastasia-lightbox");
@@ -69,6 +74,7 @@ function resetLightboxTransform() {
   lightboxScale = 1;
   lightboxX = 0;
   lightboxY = 0;
+  mousePanActive = false;
 }
 
 function closeLightbox() {
@@ -83,6 +89,19 @@ function closeLightbox() {
 function stepLightbox(direction: -1 | 1) {
   lightboxIndex += direction;
   resetLightboxTransform();
+  renderLightbox();
+}
+
+function setDesktopScale(nextScale: number) {
+  lightboxScale = Math.max(1, Math.min(4, nextScale));
+  if (lightboxScale <= 1.01) {
+    lightboxX = 0;
+    lightboxY = 0;
+  } else {
+    const clamped = clampPan(lightboxX, lightboxY, lightboxScale);
+    lightboxX = clamped.x;
+    lightboxY = clamped.y;
+  }
   renderLightbox();
 }
 
@@ -112,6 +131,51 @@ function ensureLightbox() {
   lightbox.querySelector<HTMLButtonElement>(".is-next")?.addEventListener("click", () => stepLightbox(1));
 
   const stage = lightbox.querySelector<HTMLElement>(".anastasia-lightbox-stage");
+
+  stage?.addEventListener("wheel", (event) => {
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    event.preventDefault();
+    const sensitivity = event.ctrlKey ? 0.008 : 0.0025;
+    const factor = Math.exp(-event.deltaY * sensitivity);
+    setDesktopScale(lightboxScale * factor);
+  }, { passive: false });
+
+  stage?.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "touch" || lightboxScale <= 1.01) return;
+    mousePanActive = true;
+    mouseStartX = event.clientX;
+    mouseStartY = event.clientY;
+    mouseOriginX = lightboxX;
+    mouseOriginY = lightboxY;
+    stage.classList.add("is-panning");
+    if (!stage.hasPointerCapture(event.pointerId)) stage.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
+
+  stage?.addEventListener("pointermove", (event) => {
+    if (!mousePanActive || event.pointerType === "touch" || lightboxScale <= 1.01) return;
+    const clamped = clampPan(
+      mouseOriginX + event.clientX - mouseStartX,
+      mouseOriginY + event.clientY - mouseStartY,
+      lightboxScale,
+    );
+    lightboxX = clamped.x;
+    lightboxY = clamped.y;
+    renderLightbox();
+  });
+
+  const stopMousePan = (event?: PointerEvent) => {
+    mousePanActive = false;
+    stage?.classList.remove("is-panning");
+    if (event && stage?.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+  };
+
+  stage?.addEventListener("pointerup", stopMousePan);
+  stage?.addEventListener("pointercancel", stopMousePan);
+  stage?.addEventListener("pointerleave", (event) => {
+    if (event.buttons === 0) stopMousePan(event);
+  });
+
   stage?.addEventListener("touchstart", (event) => {
     if (event.touches.length >= 2) {
       const first = event.touches[0];
