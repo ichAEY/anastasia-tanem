@@ -1,0 +1,86 @@
+.anastasia-site {
+  visibility: hidden;
+}
+
+.anastasia-site.is-ready {
+  visibility: visible;
+}
+
+.anastasia-site .anastasia-hide {
+  display: none !important;
+}
+
+.anastasia-site #mobile-prices .mct-tabs,
+.anastasia-site #mobile-prices .mct-service-list,
+.anastasia-site #mobile-prices .mct-shell > button {
+  display: none !important;
+}
+
+.anastasia-services {
+  display: grid;
+  gap: 34px;
+  margin-top: 28px;
+}
+
+.anastasia-service-group {
+  display: grid;
+  gap: 14px;
+}
+
+.anastasia-service-group > h3 {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.anastasia-service-list {
+  display: grid;
+  gap: 0;
+}
+
+.anastasia-site #mobile-about .mct-about-portrait-wrap {
+  min-height: 220px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.anastasia-site #mobile-about .mct-about-portrait {
+  display: none !important;
+}
+
+.anastasia-site #mobile-about .mct-about-experience {
+  position: static !important;
+  transform: none !important;
+  margin: 0 auto !important;
+}
+
+.anastasia-site #mobile-portfolio .mct-ba-labels {
+  display: none !important;
+}
+
+.anastasia-site #mobile-portfolio button {
+  cursor: default !important;
+}
+
+.anastasia-site .mct-hero-visual img,
+.anastasia-site #mobile-portfolio img,
+.anastasia-site #mobile-promotions img {
+  object-fit: cover;
+}
+
+@media (max-width: 760px) {
+  .anastasia-services {
+    gap: 26px;
+    margin-top: 20px;
+  }
+
+  .anastasia-service-group > h3 {
+    font-size: 24px;
+  }
+
+  .anastasia-site #mobile-about .mct-about-portrait-wrap {
+    min-height: 150px !important;
+  }
+}
