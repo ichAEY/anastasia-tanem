@@ -39,6 +39,23 @@ jobs:
               -d '{"build_type":"workflow"}' || true
           fi
 
+      - name: Resolve Pages base path
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -sS \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages" > /tmp/pages-current.json
+          cname=$(node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('/tmp/pages-current.json','utf8')); process.stdout.write(p.cname || '')")
+          repo_name="${GITHUB_REPOSITORY#*/}"
+          if [ -n "$cname" ]; then
+            echo "NEXT_PUBLIC_BASE_PATH=" >> "$GITHUB_ENV"
+          else
+            echo "NEXT_PUBLIC_BASE_PATH=/$repo_name" >> "$GITHUB_ENV"
+          fi
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
