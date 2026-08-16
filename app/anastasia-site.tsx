@@ -6,17 +6,31 @@ import "./anastasia-overrides.css";
 
 const PHONE = "+7 916 286-28-63";
 const TEL = "tel:+79162862863";
-const BOOKING = "https://wa.me/79162862863";
+const BOOKING = "https://wa.me/79162862863?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%2C%20%D1%85%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BF%D0%B8%D1%81%D0%B0%D1%82%D1%8C%D1%81%D1%8F.";
 const MAP = "https://yandex.ru/maps/org/anastasiya/142517400350/?ll=37.591117%2C55.788965&z=17";
 const REVIEWS = "https://yandex.ru/maps/org/anastasiya/142517400350/reviews/";
 const ROUTE = "https://yandex.ru/maps/?mode=routes&rtext=~55.788965%2C37.591117&rtt=auto";
 const MAP_EMBED = "https://yandex.ru/map-widget/v1/?ll=37.591117%2C55.788965&mode=search&oid=142517400350&ol=biz&z=17";
 
-const WORK_PHOTOS = [
-  "https://avatars.mds.yandex.net/get-altay/11400692/2a0000019107cf21104ea443ca7b239bc60f/XXL_height",
-  "https://avatars.mds.yandex.net/get-altay/16874425/2a0000019cedd69b335ce820adeb59852bbd/XXL_height",
-  "https://avatars.mds.yandex.net/get-altay/19541413/2a0000019cedd68954027780d4559697183e/XXL_height",
-  "https://avatars.mds.yandex.net/get-altay/15223195/2a000001967c4576fe3c146b9303846e1f1e/XXL_height",
+type Service = {
+  name: string;
+  price: string;
+  description: string;
+  category: "manicure" | "pedicure" | "brows";
+};
+
+const services: Service[] = [
+  { name: "Комплекс маникюр с покрытием гель-лак", price: "3 000 ₽", description: "Снятие, маникюр и покрытие.", category: "manicure" },
+  { name: "Маникюр с покрытием гель-лак", price: "1 900 ₽", description: "Аккуратная обработка и покрытие гель-лаком.", category: "manicure" },
+  { name: "Коррекция наращённых ногтей без маникюра", price: "от 1 500 ₽", description: "Коррекция длины и формы наращённых ногтей.", category: "manicure" },
+  { name: "Наращивание ногтей без маникюра", price: "от 2 500 ₽", description: "Моделирование длины и формы ногтей.", category: "manicure" },
+  { name: "Укрепление акриловой пудрой", price: "300 ₽", description: "Дополнительное укрепление ногтевой пластины.", category: "manicure" },
+  { name: "Укрепление гелем", price: "1 000 ₽", description: "Укрепление и выравнивание ногтевой пластины.", category: "manicure" },
+  { name: "Снятие гель-лака", price: "300 ₽", description: "Аккуратное снятие покрытия.", category: "manicure" },
+  { name: "Педикюр", price: "2 300 ₽", description: "SMART, классический, аппаратный или комбинированный педикюр.", category: "pedicure" },
+  { name: "Педикюр с покрытием гель-лак", price: "3 500 ₽", description: "Педикюр и покрытие гель-лаком.", category: "pedicure" },
+  { name: "Оформление бровей пинцет / нитка", price: "700 ₽", description: "Коррекция формы бровей.", category: "brows" },
+  { name: "Окрашивание бровей", price: "700 ₽", description: "Окрашивание краской или хной.", category: "brows" },
 ];
 
 const reviews = [
@@ -26,34 +40,17 @@ const reviews = [
   ["Анастасия Метелица", "Большой опыт мастера, комфортный сервис и результат, которому можно доверять."],
 ] as const;
 
-const services = {
-  manicure: [
-    ["Комплекс маникюр с покрытием гель-лак", "3 000 ₽", "Снятие, маникюр и покрытие. Запись напрямую у мастера."],
-    ["Маникюр с покрытием гель-лак", "1 900 ₽", "Аккуратная обработка и покрытие гель-лаком."],
-    ["Коррекция наращённых ногтей без маникюра", "от 1 500 ₽", "Коррекция длины и формы наращённых ногтей."],
-    ["Наращивание ногтей без маникюра", "от 2 500 ₽", "Моделирование длины и формы ногтей."],
-    ["Укрепление акриловой пудрой", "300 ₽", "Дополнительное укрепление ногтевой пластины."],
-    ["Укрепление гелем", "1 000 ₽", "Укрепление и выравнивание ногтевой пластины."],
-    ["Снятие гель-лака", "300 ₽", "Аккуратное снятие покрытия."],
-  ],
-  pedicure: [
-    ["Педикюр", "2 300 ₽", "SMART, классический, аппаратный или комбинированный педикюр."],
-    ["Педикюр с покрытием гель-лак", "3 500 ₽", "Педикюр и покрытие гель-лаком."],
-  ],
-  extra: [
-    ["Оформление бровей пинцет / нитка", "700 ₽", "Коррекция формы бровей."],
-    ["Окрашивание бровей", "700 ₽", "Окрашивание краской или хной."],
-  ],
-} as const;
-
 function patchText(root: ParentNode) {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const nodes: Text[] = [];
   while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+
   for (const node of nodes) {
     const value = node.nodeValue ?? "";
     const next = value
       .replaceAll("ClayTone", "Анастасия")
+      .replaceAll("Нонне", "Анастасии")
+      .replaceAll("Нонны", "Анастасии")
       .replaceAll("Нонна", "Анастасия")
       .replaceAll("+7 905 414-10-88", PHONE)
       .replaceAll("Кооперативная улица, 4, корп. 9", "Новослободская улица, 67/69")
@@ -69,8 +66,7 @@ function patchAttributes(root: ParentNode) {
     for (const attr of ["aria-label", "title"] as const) {
       const value = el.getAttribute(attr);
       if (!value) continue;
-      const next = value.replaceAll("ClayTone", "Анастасия").replaceAll("Нонна", "Анастасия");
-      if (next !== value) el.setAttribute(attr, next);
+      el.setAttribute(attr, value.replaceAll("ClayTone", "Анастасия").replaceAll("Нонна", "Анастасия"));
     }
   });
 
@@ -81,7 +77,9 @@ function patchAttributes(root: ParentNode) {
       if (a.textContent?.includes("905 414")) a.textContent = PHONE;
     }
     if (href.includes("yclients.com")) a.href = BOOKING;
-    if (href.includes("132613437697") || href.includes("/maps/org/claytone")) a.href = href.includes("reviews") ? REVIEWS : MAP;
+    if (href.includes("132613437697") || href.includes("/maps/org/claytone")) {
+      a.href = href.includes("reviews") ? REVIEWS : MAP;
+    }
     if (href.includes("mode=routes")) a.href = ROUTE;
     if (href.includes("t.me/")) a.classList.add("anastasia-hide");
   });
@@ -91,60 +89,90 @@ function patchAttributes(root: ParentNode) {
   });
 }
 
-function patchImages(root: ParentNode) {
-  let workIndex = 0;
-  root.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
-    const src = img.getAttribute("src") ?? "";
-    if (src.includes("nonna-about")) {
-      img.closest("figure")?.classList.add("anastasia-hide");
-      return;
-    }
-    if (src.includes("nonna-portrait")) {
-      img.src = WORK_PHOTOS[0];
-      img.alt = "Работа Анастасии — мастер маникюра и педикюра";
-      return;
-    }
-    if (
-      src.includes("before-after") ||
-      src.includes("/assets/work-") ||
-      src.includes("mobile-work-") ||
-      src.includes("portfolio-")
-    ) {
-      img.src = WORK_PHOTOS[workIndex % WORK_PHOTOS.length];
-      img.alt = "Работа Анастасии — маникюр и ногтевой сервис";
-      workIndex += 1;
-    }
-  });
-}
-
-function injectServices(root: HTMLElement) {
-  const shell = root.querySelector<HTMLElement>("#mobile-prices .mct-shell");
+function injectServices() {
+  const shell = document.querySelector<HTMLElement>("#mobile-prices .mct-shell");
   if (!shell || shell.querySelector(".anastasia-services")) return;
 
   const host = document.createElement("div");
   host.className = "anastasia-services";
+  host.innerHTML = `
+    <div class="anastasia-tabs" role="tablist" aria-label="Категории услуг">
+      <button class="mct-tab is-active" type="button" data-category="all">Все</button>
+      <button class="mct-tab" type="button" data-category="manicure">Маникюр</button>
+      <button class="mct-tab" type="button" data-category="pedicure">Педикюр</button>
+      <button class="mct-tab" type="button" data-category="brows">Брови</button>
+    </div>
+    <div class="anastasia-service-list"></div>
+    <button class="mct-more-services anastasia-more-services" type="button" aria-expanded="false">
+      <span>Посмотреть всё меню</span>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </button>
+  `;
 
-  const group = (title: string, items: readonly (readonly [string, string, string])[]) => `
-    <section class="anastasia-service-group">
-      <h3>${title}</h3>
-      <div class="anastasia-service-list">
-        ${items.map(([name, price, description]) => `
-          <article class="mct-service-row">
-            <div class="mct-service-name"><strong>${name}</strong><p class="dct-service-description">${description}</p></div>
-            <div class="mct-service-action"><b>${price}</b><a href="${BOOKING}" target="_blank" rel="noopener noreferrer">Записаться →</a></div>
-          </article>`).join("")}
-      </div>
-    </section>`;
-
-  host.innerHTML = group("Маникюр", services.manicure) + group("Педикюр", services.pedicure) + group("Дополнительно", services.extra);
   shell.appendChild(host);
+
+  const list = host.querySelector<HTMLElement>(".anastasia-service-list");
+  const more = host.querySelector<HTMLButtonElement>(".anastasia-more-services");
+  const tabs = Array.from(host.querySelectorAll<HTMLButtonElement>("[data-category]"));
+  if (!list || !more) return;
+
+  let category: "all" | "manicure" | "pedicure" | "brows" = "all";
+  let expanded = false;
+
+  const render = () => {
+    const filtered = category === "all" ? services : services.filter((service) => service.category === category);
+    const visible = category === "all" && !expanded ? filtered.slice(0, 7) : filtered;
+
+    list.innerHTML = visible.map((service) => `
+      <article class="mct-service-row">
+        <div class="mct-service-name">
+          <strong>${service.name}</strong>
+          <p class="dct-service-description">${service.description}</p>
+        </div>
+        <div class="mct-service-action">
+          <b>${service.price}</b>
+          <a href="${BOOKING}" target="_blank" rel="noopener noreferrer">Записаться →</a>
+        </div>
+      </article>
+    `).join("");
+
+    const canExpand = category === "all" && filtered.length > 7;
+    more.hidden = !canExpand;
+    more.classList.toggle("is-open", expanded);
+    more.setAttribute("aria-expanded", String(expanded));
+    const label = more.querySelector("span");
+    if (label) label.textContent = expanded ? "Свернуть меню" : "Посмотреть всё меню";
+
+    tabs.forEach((tab) => {
+      const active = tab.dataset.category === category;
+      tab.classList.toggle("is-active", active);
+      tab.setAttribute("aria-selected", String(active));
+    });
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      category = (tab.dataset.category ?? "all") as typeof category;
+      expanded = false;
+      render();
+    });
+  });
+
+  more.addEventListener("click", () => {
+    expanded = !expanded;
+    render();
+  });
+
+  render();
 }
 
-function patchStaticContent(root: HTMLElement) {
+function patchStaticContent() {
+  const root = document.querySelector<HTMLElement>(".anastasia-site");
+  if (!root) return;
+
   patchText(root);
   patchAttributes(root);
-  patchImages(root);
-  injectServices(root);
+  injectServices();
 
   root.querySelectorAll<HTMLElement>(".mct-brand").forEach((el) => { el.textContent = "Анастасия"; });
 
@@ -156,17 +184,14 @@ function patchStaticContent(root: HTMLElement) {
   const stats = root.querySelectorAll<HTMLElement>(".mct-stats .mct-stat");
   if (stats[0]?.querySelector("strong")) stats[0].querySelector("strong")!.textContent = "10";
   if (stats[1]?.querySelector("strong")) stats[1].querySelector("strong")!.innerHTML = '4,9 <i class="mct-stat-star">★</i>';
-  if (stats[2]?.querySelector("strong")) stats[2].querySelector("strong")!.textContent = "65";
+  if (stats[2]?.querySelector("strong")) stats[2].querySelector("strong")!.textContent = "58";
 
   const portfolio = root.querySelector<HTMLElement>("#mobile-portfolio");
   const portfolioHeading = portfolio?.querySelector<HTMLElement>("h2");
   if (portfolioHeading) portfolioHeading.textContent = "Работы";
   const portfolioNote = portfolio?.querySelector<HTMLElement>(".mct-section-note");
-  if (portfolioNote) portfolioNote.textContent = "Примеры работ Анастасии";
-  portfolio?.querySelectorAll<HTMLElement>(".mct-ba-labels").forEach((el) => el.classList.add("anastasia-hide"));
+  if (portfolioNote) portfolioNote.textContent = "Галерея работ мастера";
 
-  const promoHead = root.querySelector<HTMLElement>("#mobile-promotions .mct-promotions-head .mct-section-kicker");
-  if (promoHead) promoHead.textContent = "Акции Анастасии";
   const promoCards = root.querySelectorAll<HTMLElement>("#mobile-promotions .mct-promotion-card");
   const promoData = [
     ["Первое посещение", "−10% на любую процедуру", "Скидка при первом посещении", "При первом визите действует скидка 10% на любую процедуру."],
@@ -185,6 +210,8 @@ function patchStaticContent(root: HTMLElement) {
   });
 
   const about = root.querySelector<HTMLElement>("#mobile-about");
+  const monogram = about?.querySelector<HTMLElement>(".mct-about-monogram");
+  if (monogram) monogram.textContent = "A";
   const aboutTitle = about?.querySelector<HTMLElement>("h2");
   if (aboutTitle) aboutTitle.innerHTML = "Анастасия — мастер<br />ногтевого сервиса";
   const aboutExperience = about?.querySelector<HTMLElement>(".mct-about-experience strong");
@@ -195,9 +222,15 @@ function patchStaticContent(root: HTMLElement) {
   if (aboutParagraphs?.[1]) aboutParagraphs[1].textContent = "Работает с маникюром, педикюром, покрытием, укреплением и наращиванием ногтей. Перед процедурой уточняет пожелания по форме и результату.";
   if (aboutParagraphs?.[2]) aboutParagraphs[2].textContent = "Кабинет находится рядом с метро Савёловская. Инструменты проходят стерилизацию, запись ведётся напрямую у мастера.";
   const aboutItems = about?.querySelectorAll<HTMLElement>(".mct-about-list li");
-  ["Маникюр и педикюр", "Наращивание и укрепление", "Стерильные инструменты"].forEach((text, i) => {
-    if (aboutItems?.[i]) aboutItems[i].textContent = text;
+  ["Маникюр и педикюр", "Наращивание и укрепление", "Стерильные инструменты"].forEach((text, index) => {
+    if (aboutItems?.[index]) aboutItems[index].textContent = text;
   });
+
+  const reviewSummary = root.querySelector<HTMLElement>(".mct-review-summary");
+  const reviewRating = reviewSummary?.querySelector<HTMLElement>("strong");
+  const reviewMeta = reviewSummary?.querySelector<HTMLElement>("span");
+  if (reviewRating) reviewRating.textContent = "4,9";
+  if (reviewMeta) reviewMeta.innerHTML = "58 оценок<br />Все отзывы на Яндексе →";
 
   const reviewCards = root.querySelectorAll<HTMLAnchorElement>("#mobile-reviews .mct-review-card");
   reviewCards.forEach((card, index) => {
@@ -212,16 +245,19 @@ function patchStaticContent(root: HTMLElement) {
   const visitAddress = root.querySelector<HTMLElement>(".mct-visit-address");
   if (visitAddress) visitAddress.innerHTML = "Москва, Новослободская улица, 67/69<span>м. Савёловская · ежедневно 10:00–22:00</span>";
 
+  const footer = root.querySelector<HTMLElement>(".dct-footer span");
+  if (footer) footer.textContent = "Маникюр и педикюр от мастера · Москва";
+
   root.querySelectorAll<HTMLAnchorElement>('a[href*="t.me/"]').forEach((a) => a.classList.add("anastasia-hide"));
   root.querySelectorAll<HTMLAnchorElement>('a[href*="yclients.com"]').forEach((a) => { a.href = BOOKING; });
-  root.querySelectorAll<HTMLAnchorElement>('a[href*="132613437697"]').forEach((a) => { a.href = a.href.includes("reviews") ? REVIEWS : MAP; });
+  root.querySelectorAll<HTMLAnchorElement>('a[href*="132613437697"]').forEach((a) => {
+    a.href = a.href.includes("reviews") ? REVIEWS : MAP;
+  });
 }
 
 export default function AnastasiaSite() {
   useLayoutEffect(() => {
-    const root = document.querySelector<HTMLElement>(".anastasia-site");
-    if (!root) return;
-    patchStaticContent(root);
+    patchStaticContent();
   }, []);
 
   return (
