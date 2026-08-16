@@ -12,26 +12,39 @@ const REVIEWS = "https://yandex.ru/maps/org/anastasiya/142517400350/reviews/";
 const ROUTE = "https://yandex.ru/maps/?mode=routes&rtext=~55.788965%2C37.591117&rtt=auto";
 const MAP_EMBED = "https://yandex.ru/map-widget/v1/?ll=37.591117%2C55.788965&mode=search&oid=142517400350&ol=biz&z=17";
 
+type ServiceCategory = "manicure" | "pedicure" | "lashes_brows";
 type Service = {
   name: string;
   price: string;
   description: string;
-  category: "manicure" | "pedicure" | "brows";
+  category: ServiceCategory;
 };
 
 const services: Service[] = [
-  { name: "Комплекс маникюр с покрытием гель-лак", price: "3 000 ₽", description: "Снятие, маникюр и покрытие.", category: "manicure" },
-  { name: "Маникюр с покрытием гель-лак", price: "1 900 ₽", description: "Аккуратная обработка и покрытие гель-лаком.", category: "manicure" },
-  { name: "Коррекция наращённых ногтей без маникюра", price: "от 1 500 ₽", description: "Коррекция длины и формы наращённых ногтей.", category: "manicure" },
-  { name: "Наращивание ногтей без маникюра", price: "от 2 500 ₽", description: "Моделирование длины и формы ногтей.", category: "manicure" },
+  { name: "Маникюр", price: "1 000 ₽", description: "Базовая обработка ногтей и кутикулы.", category: "manicure" },
+  { name: "Маникюр с покрытием гель-лак", price: "1 900 ₽", description: "Маникюр и стойкое покрытие гель-лаком.", category: "manicure" },
+  { name: "Комплекс маникюр с покрытием гель-лак", price: "2 500 ₽", description: "Маникюр на выбор, покрытие гель-лаком; снятие — в подарок.", category: "manicure" },
+  { name: "Маникюр: классический / европейский / аппаратный / комбинированный", price: "1 200 ₽", description: "Выбор техники обработки в зависимости от состояния ногтей и кожи.", category: "manicure" },
   { name: "Укрепление акриловой пудрой", price: "300 ₽", description: "Дополнительное укрепление ногтевой пластины.", category: "manicure" },
-  { name: "Укрепление гелем", price: "1 000 ₽", description: "Укрепление и выравнивание ногтевой пластины.", category: "manicure" },
-  { name: "Снятие гель-лака", price: "300 ₽", description: "Аккуратное снятие покрытия.", category: "manicure" },
-  { name: "Педикюр", price: "2 300 ₽", description: "SMART, классический, аппаратный или комбинированный педикюр.", category: "pedicure" },
-  { name: "Педикюр с покрытием гель-лак", price: "3 500 ₽", description: "Педикюр и покрытие гель-лаком.", category: "pedicure" },
-  { name: "Оформление бровей пинцет / нитка", price: "700 ₽", description: "Коррекция формы бровей.", category: "brows" },
-  { name: "Окрашивание бровей", price: "700 ₽", description: "Окрашивание краской или хной.", category: "brows" },
+  { name: "Укрепление гелем", price: "1 000 ₽", description: "Укрепление и выравнивание ногтей гелем.", category: "manicure" },
+  { name: "Коррекция наращённых ногтей без маникюра", price: "от 1 500 ₽", description: "Коррекция длины и формы наращённых ногтей.", category: "manicure" },
+  { name: "Наращивание ногтей без маникюра", price: "от 2 500 ₽", description: "Моделирование желаемой длины и формы.", category: "manicure" },
+  { name: "Снятие гель-лака", price: "300 ₽", description: "Аккуратное снятие старого покрытия.", category: "manicure" },
+
+  { name: "Педикюр: SMART / классический / аппаратный / комбинированный", price: "2 300 ₽", description: "Обработка ногтей и стоп выбранной техникой.", category: "pedicure" },
+  { name: "Педикюр с покрытием гель-лак", price: "3 500 ₽", description: "Педикюр и покрытие гель-лаком; снятие — в подарок.", category: "pedicure" },
+
+  { name: "Наращивание ресниц — классический объём", price: "2 500 ₽", description: "Классическое поресничное наращивание.", category: "lashes_brows" },
+  { name: "Наращивание ресниц — 2D", price: "3 000 ₽", description: "Двойной объём с аккуратным распределением ресниц.", category: "lashes_brows" },
+  { name: "Наращивание ресниц — 3D", price: "3 500 ₽", description: "Тройной объём для более выразительного взгляда.", category: "lashes_brows" },
+  { name: "Наращивание ресниц — Hollywood 4D–5D", price: "4 500 ₽", description: "Выразительный объём 4D–5D.", category: "lashes_brows" },
+  { name: "Ламинирование ресниц", price: "1 500 ₽", description: "Изгиб, визуальная длина и ухоженный вид натуральных ресниц.", category: "lashes_brows" },
+  { name: "Оформление бровей пинцет / нитка", price: "700 ₽", description: "Коррекция и оформление формы бровей.", category: "lashes_brows" },
+  { name: "Окрашивание бровей краской / хной", price: "700 ₽", description: "Окрашивание с подбором подходящего оттенка.", category: "lashes_brows" },
+  { name: "Ламинирование бровей", price: "1 500 ₽", description: "Укладка и фиксация формы бровей.", category: "lashes_brows" },
 ];
+
+const COLLAPSED_ALL_COUNT = services.findIndex((service) => service.name === "Снятие гель-лака") + 1;
 
 const reviews = [
   ["Елена Лукьянова", "Очень аккуратная работа, большой выбор оттенков и профессиональный подход."],
@@ -100,7 +113,7 @@ function injectServices() {
       <button class="mct-tab is-active" type="button" data-category="all">Все</button>
       <button class="mct-tab" type="button" data-category="manicure">Маникюр</button>
       <button class="mct-tab" type="button" data-category="pedicure">Педикюр</button>
-      <button class="mct-tab" type="button" data-category="brows">Брови</button>
+      <button class="mct-tab" type="button" data-category="lashes_brows">Ресницы и брови</button>
     </div>
     <div class="anastasia-service-list"></div>
     <button class="mct-more-services anastasia-more-services" type="button" aria-expanded="false">
@@ -116,12 +129,12 @@ function injectServices() {
   const tabs = Array.from(host.querySelectorAll<HTMLButtonElement>("[data-category]"));
   if (!list || !more) return;
 
-  let category: "all" | "manicure" | "pedicure" | "brows" = "all";
+  let category: "all" | ServiceCategory = "all";
   let expanded = false;
 
   const render = () => {
     const filtered = category === "all" ? services : services.filter((service) => service.category === category);
-    const visible = category === "all" && !expanded ? filtered.slice(0, 7) : filtered;
+    const visible = category === "all" && !expanded ? filtered.slice(0, COLLAPSED_ALL_COUNT) : filtered;
 
     list.innerHTML = visible.map((service) => `
       <article class="mct-service-row">
@@ -136,7 +149,7 @@ function injectServices() {
       </article>
     `).join("");
 
-    const canExpand = category === "all" && filtered.length > 7;
+    const canExpand = category === "all" && filtered.length > COLLAPSED_ALL_COUNT;
     more.hidden = !canExpand;
     more.classList.toggle("is-open", expanded);
     more.setAttribute("aria-expanded", String(expanded));
@@ -155,6 +168,7 @@ function injectServices() {
       category = (tab.dataset.category ?? "all") as typeof category;
       expanded = false;
       render();
+      tab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
     });
   });
 
@@ -179,7 +193,7 @@ function patchStaticContent() {
   const heroTitle = root.querySelector<HTMLElement>(".mct-hero h1");
   if (heroTitle) heroTitle.innerHTML = "Анастасия — мастер <em>маникюра и педикюра</em>";
   const heroCopy = root.querySelector<HTMLElement>(".mct-hero-copy");
-  if (heroCopy) heroCopy.textContent = "10 лет опыта. Маникюр, педикюр, покрытие, укрепление и наращивание с аккуратной обработкой и стерильными инструментами.";
+  if (heroCopy) heroCopy.textContent = "10 лет опыта. Маникюр, педикюр, ресницы и брови — аккуратно, с вниманием к пожеланиям и результату.";
 
   const stats = root.querySelectorAll<HTMLElement>(".mct-stats .mct-stat");
   if (stats[0]?.querySelector("strong")) stats[0].querySelector("strong")!.textContent = "10";
@@ -213,16 +227,16 @@ function patchStaticContent() {
   const monogram = about?.querySelector<HTMLElement>(".mct-about-monogram");
   if (monogram) monogram.textContent = "A";
   const aboutTitle = about?.querySelector<HTMLElement>("h2");
-  if (aboutTitle) aboutTitle.innerHTML = "Анастасия — мастер<br />ногтевого сервиса";
+  if (aboutTitle) aboutTitle.innerHTML = "Анастасия — мастер<br />бьюти-сервиса";
   const aboutExperience = about?.querySelector<HTMLElement>(".mct-about-experience strong");
   if (aboutExperience) aboutExperience.textContent = "10";
   const aboutLead = about?.querySelector<HTMLElement>(".mct-about-lead");
-  if (aboutLead) aboutLead.textContent = "Анастасия — мастер маникюра и педикюра с 10-летним опытом.";
+  if (aboutLead) aboutLead.textContent = "Анастасия — мастер с 10-летним опытом.";
   const aboutParagraphs = about?.querySelectorAll<HTMLElement>(".mct-about-copy > p");
-  if (aboutParagraphs?.[1]) aboutParagraphs[1].textContent = "Работает с маникюром, педикюром, покрытием, укреплением и наращиванием ногтей. Перед процедурой уточняет пожелания по форме и результату.";
-  if (aboutParagraphs?.[2]) aboutParagraphs[2].textContent = "Кабинет находится рядом с метро Савёловская. Инструменты проходят стерилизацию, запись ведётся напрямую у мастера.";
+  if (aboutParagraphs?.[1]) aboutParagraphs[1].textContent = "Маникюр, педикюр, наращивание и укрепление ногтей, а также процедуры для ресниц и бровей.";
+  if (aboutParagraphs?.[2]) aboutParagraphs[2].textContent = "Кабинет находится рядом с метро Савёловская. Запись ведётся напрямую у мастера.";
   const aboutItems = about?.querySelectorAll<HTMLElement>(".mct-about-list li");
-  ["Маникюр и педикюр", "Наращивание и укрепление", "Стерильные инструменты"].forEach((text, index) => {
+  ["Маникюр и педикюр", "Ресницы и брови", "10 лет опыта"].forEach((text, index) => {
     if (aboutItems?.[index]) aboutItems[index].textContent = text;
   });
 
@@ -246,7 +260,7 @@ function patchStaticContent() {
   if (visitAddress) visitAddress.innerHTML = "Москва, Новослободская улица, 67/69<span>м. Савёловская · ежедневно 10:00–22:00</span>";
 
   const footer = root.querySelector<HTMLElement>(".dct-footer span");
-  if (footer) footer.textContent = "Маникюр и педикюр от мастера · Москва";
+  if (footer) footer.textContent = "Маникюр, педикюр, ресницы и брови · Москва";
 
   root.querySelectorAll<HTMLAnchorElement>('a[href*="t.me/"]').forEach((a) => a.classList.add("anastasia-hide"));
   root.querySelectorAll<HTMLAnchorElement>('a[href*="yclients.com"]').forEach((a) => { a.href = BOOKING; });
