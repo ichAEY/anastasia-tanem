@@ -3,7 +3,7 @@
 import { useLayoutEffect } from "react";
 import "./anastasia-final-tweaks.css";
 
-const BOOKING = "https://wa.me/79162862863?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%2C%20%D1%85%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BF%D0%B8%D1%81%D0%B0%D1%82%D1%8C%D1%81%D1%8F.";
+const BOOKING = "https://wa.me/79162862863?text=%D0%97%D0%B4%D1%80%D0%B0%D0%BF%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%2C%20%D1%85%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BF%D0%B8%D1%81%D0%B0%D1%82%D1%8C%D1%81%D1%8F.";
 
 const galleryOriginals = [
   "anastasia-photo1.png",
@@ -28,9 +28,7 @@ function applyFinalTweaks() {
   const originalsBase = `${assetBase}/assets/anastasia-originals/anastasia-originals`;
   const galleryUrls = galleryOriginals.map((filename) => `${originalsBase}/${filename}`);
 
-  const portfolioButtons = Array.from(root.querySelectorAll<HTMLButtonElement>(
-    "#mobile-portfolio .mct-work-tile, #mobile-portfolio .dct-film-frame"
-  ));
+  const portfolioButtons = Array.from(root.querySelectorAll<HTMLButtonElement>("#mobile-portfolio .mct-work-tile, #mobile-portfolio .dct-film-frame"));
   portfolioButtons.forEach((button, index) => {
     const image = button.querySelector<HTMLImageElement>("img");
     const src = galleryUrls[index % galleryUrls.length];
@@ -40,7 +38,6 @@ function applyFinalTweaks() {
       image.loading = "lazy";
       image.decoding = "async";
     }
-
     if (!button.dataset.anastasiaBound) {
       button.dataset.anastasiaBound = "true";
       button.addEventListener("click", (event) => {
@@ -58,7 +55,6 @@ function applyFinalTweaks() {
     Array.from(galleryContent.querySelectorAll<HTMLElement>("h3")).forEach((heading) => {
       if (heading.textContent?.toLowerCase().includes("до / после")) heading.remove();
     });
-
     const works = galleryContent.querySelector<HTMLElement>(".mct-gallery-works");
     if (works && works.dataset.anastasiaGallery !== "true") {
       works.dataset.anastasiaGallery = "true";
@@ -92,7 +88,6 @@ function applyFinalTweaks() {
   const booking = root.querySelector<HTMLElement>("#mobile-booking");
   const bookingTitle = booking?.querySelector<HTMLElement>("h3");
   if (bookingTitle) bookingTitle.innerHTML = "Запись через WhatsApp<br /><em>напрямую у мастера</em>";
-
   const bookingCopy = booking?.querySelector<HTMLElement>(":scope > p");
   if (bookingCopy) bookingCopy.textContent = "Нажмите кнопку — откроется чат с Анастасией и готовым сообщением «Здравствуйте, хочу записаться».";
 
@@ -142,6 +137,5 @@ export default function AnastasiaFinalTweaks() {
     const frame = window.requestAnimationFrame(applyFinalTweaks);
     return () => window.cancelAnimationFrame(frame);
   }, []);
-
   return null;
 }
