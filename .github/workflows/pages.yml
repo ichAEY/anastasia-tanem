@@ -125,15 +125,21 @@ jobs:
         run: |
           node - <<'NODE'
           const fs = require('fs');
-          const path = 'app/mobile-claytone.tsx';
-          let source = fs.readFileSync(path, 'utf8');
-          source = source
+
+          const mobilePath = 'app/mobile-claytone.tsx';
+          let mobileSource = fs.readFileSync(mobilePath, 'utf8');
+          mobileSource = mobileSource
             .replace('<span>ClayTone</span>', '<span>A</span>')
             .replace('<small>Nail studio</small>', '<small>ANASTASIA</small>')
             .replace('src="/assets/nonna-portrait.jpeg"', 'src="/assets/anastasia-optimized/anastasia-omastere.webp"')
             .replace('alt="Нонна, мастер ногтевого сервиса ClayTone"', 'alt="Анастасия — мастер бьюти-сервиса"')
             .replace('<figcaption><span>ClayTone</span><small>Индивидуальная работа мастера</small></figcaption>', '<figcaption><span>Анастасия</span><small>10 лет опыта</small></figcaption>');
-          fs.writeFileSync(path, source);
+          fs.writeFileSync(mobilePath, mobileSource);
+
+          const sitePath = 'app/anastasia-site.tsx';
+          let siteSource = fs.readFileSync(sitePath, 'utf8');
+          siteSource = siteSource.replace(/\n\s*tab\.scrollIntoView\(\{ behavior: "smooth", block: "nearest", inline: "center" \}\);/g, '');
+          fs.writeFileSync(sitePath, siteSource);
           NODE
 
       - name: Ignore hosting-only TypeScript files for Pages build
