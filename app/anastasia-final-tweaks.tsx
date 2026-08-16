@@ -28,7 +28,6 @@ function applyFinalTweaks() {
   const originalsBase = `${assetBase}/assets/anastasia-originals/anastasia-originals`;
   const galleryUrls = galleryOriginals.map((filename) => `${originalsBase}/${filename}`);
 
-  // Visible portfolio: only Anastasia's uploaded work photos.
   const portfolioButtons = Array.from(root.querySelectorAll<HTMLButtonElement>(
     "#mobile-portfolio .mct-work-tile, #mobile-portfolio .dct-film-frame"
   ));
@@ -42,7 +41,6 @@ function applyFinalTweaks() {
       image.decoding = "async";
     }
 
-    // Capture click before old React handlers so old Nonna images never open.
     if (!button.dataset.anastasiaBound) {
       button.dataset.anastasiaBound = "true";
       button.addEventListener("click", (event) => {
@@ -54,7 +52,6 @@ function applyFinalTweaks() {
     }
   });
 
-  // Gallery overlay: remove before/after completely and render exactly 12 uploaded works.
   const galleryContent = root.querySelector<HTMLElement>(".mct-gallery-content");
   if (galleryContent) {
     galleryContent.querySelectorAll<HTMLElement>(".mct-gallery-ba").forEach((el) => el.remove());
@@ -73,7 +70,6 @@ function applyFinalTweaks() {
     }
   }
 
-  // About block: only the photo uploaded by the user.
   const about = root.querySelector<HTMLElement>("#mobile-about");
   const aboutFigure = about?.querySelector<HTMLElement>(".mct-about-portrait");
   const aboutImage = aboutFigure?.querySelector<HTMLImageElement>("img");
@@ -85,7 +81,6 @@ function applyFinalTweaks() {
     aboutImage.decoding = "async";
   }
 
-  // First promotion: user's chosen image.
   const firstPromoImage = root.querySelector<HTMLImageElement>("#mobile-promotions .mct-promotion-card:first-child figure img");
   if (firstPromoImage) {
     firstPromoImage.src = `${originalsBase}/anastasia-actia1.png`;
@@ -94,7 +89,6 @@ function applyFinalTweaks() {
     firstPromoImage.decoding = "async";
   }
 
-  // Booking language matches direct WhatsApp contact.
   const booking = root.querySelector<HTMLElement>("#mobile-booking");
   const bookingTitle = booking?.querySelector<HTMLElement>("h3");
   if (bookingTitle) bookingTitle.innerHTML = "Запись через WhatsApp<br /><em>напрямую у мастера</em>";
@@ -133,7 +127,6 @@ function applyFinalTweaks() {
   const serviceHint = root.querySelector<HTMLElement>("#mobile-prices .mct-price-head > span");
   if (serviceHint) serviceHint.textContent = "Выберите услугу — запись откроется в WhatsApp в новой вкладке.";
 
-  // Any link that leaves this site must open in a separate tab.
   root.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((link) => {
     const href = link.getAttribute("href") ?? "";
     if (/^https?:\/\//i.test(href)) {
