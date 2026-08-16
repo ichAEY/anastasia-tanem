@@ -20,91 +20,35 @@ const galleryFiles = [
   "anastasia-photo13.webp",
 ];
 
-const SERVICE_POLISH: Record<string, { title: string; description: string }> = {
-  "Маникюр": {
-    title: "Маникюр",
-    description: "Обработка ногтей и кутикулы",
-  },
-  "Маникюр с покрытием гель-лак": {
-    title: "Маникюр с гель-лаком",
-    description: "Маникюр · стойкое покрытие",
-  },
-  "Комплекс маникюр с покрытием гель-лак": {
-    title: "Комплекс с гель-лаком",
-    description: "Маникюр · покрытие · снятие в подарок",
-  },
-  "Маникюр: классический / европейский / аппаратный / комбинированный": {
-    title: "Маникюр без покрытия",
-    description: "Классический · европейский · аппаратный · комбинированный",
-  },
-  "Укрепление акриловой пудрой": {
-    title: "Укрепление акриловой пудрой",
-    description: "Дополнительное укрепление ногтевой пластины",
-  },
-  "Укрепление гелем": {
-    title: "Укрепление гелем",
-    description: "Укрепление · выравнивание ногтей",
-  },
-  "Коррекция наращённых ногтей без маникюра": {
-    title: "Коррекция наращённых ногтей",
-    description: "Без маникюра · коррекция длины и формы",
-  },
-  "Наращивание ногтей без маникюра": {
-    title: "Наращивание ногтей",
-    description: "Без маникюра · моделирование длины и формы",
-  },
-  "Снятие гель-лака": {
-    title: "Снятие гель-лака",
-    description: "Аккуратное снятие старого покрытия",
-  },
-  "Педикюр: SMART / классический / аппаратный / комбинированный": {
-    title: "Педикюр без покрытия",
-    description: "SMART · классический · аппаратный · комбинированный",
-  },
-  "Педикюр с покрытием гель-лак": {
-    title: "Педикюр с гель-лаком",
-    description: "Педикюр · покрытие · снятие в подарок",
-  },
-  "Наращивание ресниц — классический объём": {
-    title: "Наращивание ресниц",
-    description: "Классический объём",
-  },
-  "Наращивание ресниц — 2D": {
-    title: "Наращивание ресниц · 2D",
-    description: "Двойной объём",
-  },
-  "Наращивание ресниц — 3D": {
-    title: "Наращивание ресниц · 3D",
-    description: "Тройной объём",
-  },
-  "Наращивание ресниц — Hollywood 4D–5D": {
-    title: "Наращивание ресниц · 4D–5D",
-    description: "Hollywood объём",
-  },
-  "Ламинирование ресниц": {
-    title: "Ламинирование ресниц",
-    description: "Изгиб · визуальная длина · ухоженный вид",
-  },
-  "Оформление бровей пинцет / нитка": {
-    title: "Оформление бровей",
-    description: "Пинцет или нить · коррекция формы",
-  },
-  "Окрашивание бровей краской / хной": {
-    title: "Окрашивание бровей",
-    description: "Краска или хна · подбор оттенка",
-  },
-  "Ламинирование бровей": {
-    title: "Ламинирование бровей",
-    description: "Укладка · фиксация формы",
-  },
-};
-
 let lightboxUrls: string[] = [];
 let lightboxIndex = 0;
 let lightboxScale = 1;
+let lightboxX = 0;
+let lightboxY = 0;
+let gestureMode: "idle" | "swipe" | "pinch" | "pan" = "idle";
+let touchStartX = 0;
+let touchStartY = 0;
+let touchOriginX = 0;
+let touchOriginY = 0;
+let pinchStartDistance = 0;
+let pinchStartScale = 1;
 
 function getLightbox() {
   return document.querySelector<HTMLElement>(".anastasia-lightbox");
+}
+
+function distanceBetween(first: Touch, second: Touch) {
+  return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+}
+
+function clampPan(x: number, y: number, scale: number) {
+  if (scale <= 1.01) return { x: 0, y: 0 };
+  const maxX = Math.max(0, (window.innerWidth * (scale - 1)) / 2);
+  const maxY = Math.max(0, (window.innerHeight * 0.72 * (scale - 1)) / 2);
+  return {
+    x: Math.max(-maxX, Math.min(maxX, x)),
+    y: Math.max(-maxY, Math.min(maxY, y)),
+  };
 }
 
 function renderLightbox() {
@@ -116,9 +60,15 @@ function renderLightbox() {
   lightboxIndex = (lightboxIndex + lightboxUrls.length) % lightboxUrls.length;
   image.src = lightboxUrls[lightboxIndex];
   image.alt = `Работа Анастасии ${lightboxIndex + 1}`;
-  image.style.transform = `scale(${lightboxScale})`;
+  image.style.transform = `translate3d(${lightboxX}px, ${lightboxY}px, 0) scale(${lightboxScale})`;
   image.classList.toggle("is-zoomed", lightboxScale > 1.01);
   if (counter) counter.textContent = `${lightboxIndex + 1} / ${lightboxUrls.length}`;
+}
+
+function resetLightboxTransform() {
+  lightboxScale = 1;
+  lightboxX = 0;
+  lightboxY = 0;
 }
 
 function closeLightbox() {
@@ -126,17 +76,13 @@ function closeLightbox() {
   if (!lightbox) return;
   lightbox.classList.remove("is-open");
   document.body.classList.remove("anastasia-lightbox-open");
-  lightboxScale = 1;
+  resetLightboxTransform();
+  gestureMode = "idle";
 }
 
 function stepLightbox(direction: -1 | 1) {
   lightboxIndex += direction;
-  lightboxScale = 1;
-  renderLightbox();
-}
-
-function setLightboxScale(next: number) {
-  lightboxScale = Math.max(1, Math.min(4, next));
+  resetLightboxTransform();
   renderLightbox();
 }
 
@@ -156,11 +102,7 @@ function ensureLightbox() {
       <img class="anastasia-lightbox-image" alt="" draggable="false" />
     </div>
     <button class="anastasia-lightbox-nav is-next" type="button" aria-label="Следующее фото">›</button>
-    <div class="anastasia-lightbox-tools" aria-label="Масштаб фотографии">
-      <button type="button" data-zoom="out" aria-label="Уменьшить">−</button>
-      <span class="anastasia-lightbox-counter"></span>
-      <button type="button" data-zoom="in" aria-label="Увеличить">+</button>
-    </div>
+    <div class="anastasia-lightbox-counter" aria-live="polite"></div>
   `;
 
   document.body.appendChild(lightbox);
@@ -168,27 +110,93 @@ function ensureLightbox() {
   lightbox.querySelector<HTMLButtonElement>(".anastasia-lightbox-close")?.addEventListener("click", closeLightbox);
   lightbox.querySelector<HTMLButtonElement>(".is-prev")?.addEventListener("click", () => stepLightbox(-1));
   lightbox.querySelector<HTMLButtonElement>(".is-next")?.addEventListener("click", () => stepLightbox(1));
-  lightbox.querySelector<HTMLButtonElement>('[data-zoom="out"]')?.addEventListener("click", () => setLightboxScale(lightboxScale - 0.5));
-  lightbox.querySelector<HTMLButtonElement>('[data-zoom="in"]')?.addEventListener("click", () => setLightboxScale(lightboxScale + 0.5));
 
-  const image = lightbox.querySelector<HTMLImageElement>(".anastasia-lightbox-image");
-  image?.addEventListener("dblclick", () => setLightboxScale(lightboxScale > 1.01 ? 1 : 2));
-  image?.addEventListener("wheel", (event) => {
+  const stage = lightbox.querySelector<HTMLElement>(".anastasia-lightbox-stage");
+  stage?.addEventListener("touchstart", (event) => {
+    if (event.touches.length >= 2) {
+      const first = event.touches[0];
+      const second = event.touches[1];
+      if (!first || !second) return;
+      gestureMode = "pinch";
+      pinchStartDistance = distanceBetween(first, second);
+      pinchStartScale = lightboxScale;
+      return;
+    }
+
+    const touch = event.touches[0];
+    if (!touch) return;
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    touchOriginX = lightboxX;
+    touchOriginY = lightboxY;
+    gestureMode = lightboxScale > 1.01 ? "pan" : "swipe";
+  }, { passive: true });
+
+  stage?.addEventListener("touchmove", (event) => {
+    if (event.touches.length >= 2) {
+      const first = event.touches[0];
+      const second = event.touches[1];
+      if (!first || !second) return;
+      event.preventDefault();
+      if (gestureMode !== "pinch" || !pinchStartDistance) {
+        gestureMode = "pinch";
+        pinchStartDistance = distanceBetween(first, second);
+        pinchStartScale = lightboxScale;
+        return;
+      }
+      lightboxScale = Math.max(1, Math.min(4, pinchStartScale * (distanceBetween(first, second) / pinchStartDistance)));
+      const clamped = clampPan(lightboxX, lightboxY, lightboxScale);
+      lightboxX = clamped.x;
+      lightboxY = clamped.y;
+      renderLightbox();
+      return;
+    }
+
+    const touch = event.touches[0];
+    if (!touch || gestureMode !== "pan" || lightboxScale <= 1.01) return;
     event.preventDefault();
-    setLightboxScale(lightboxScale + (event.deltaY < 0 ? 0.25 : -0.25));
+    const clamped = clampPan(
+      touchOriginX + touch.clientX - touchStartX,
+      touchOriginY + touch.clientY - touchStartY,
+      lightboxScale,
+    );
+    lightboxX = clamped.x;
+    lightboxY = clamped.y;
+    renderLightbox();
   }, { passive: false });
 
-  let pointerStartX: number | null = null;
-  const stage = lightbox.querySelector<HTMLElement>(".anastasia-lightbox-stage");
-  stage?.addEventListener("pointerdown", (event) => {
-    if (lightboxScale > 1.01) return;
-    pointerStartX = event.clientX;
+  stage?.addEventListener("touchend", (event) => {
+    if (event.touches.length === 1) {
+      const touch = event.touches[0];
+      if (!touch) return;
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      touchOriginX = lightboxX;
+      touchOriginY = lightboxY;
+      gestureMode = lightboxScale > 1.01 ? "pan" : "idle";
+      return;
+    }
+
+    if (gestureMode === "swipe" && lightboxScale <= 1.01) {
+      const touch = event.changedTouches[0];
+      if (touch) {
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          stepLightbox(deltaX > 0 ? -1 : 1);
+        }
+      }
+    }
+
+    if (lightboxScale < 1.04) {
+      resetLightboxTransform();
+      renderLightbox();
+    }
+    gestureMode = "idle";
   });
-  stage?.addEventListener("pointerup", (event) => {
-    if (pointerStartX === null || lightboxScale > 1.01) return;
-    const delta = event.clientX - pointerStartX;
-    pointerStartX = null;
-    if (Math.abs(delta) > 55) stepLightbox(delta > 0 ? -1 : 1);
+
+  stage?.addEventListener("touchcancel", () => {
+    gestureMode = "idle";
   });
 
   lightbox.addEventListener("click", (event) => {
@@ -197,10 +205,8 @@ function ensureLightbox() {
 
   lightbox.addEventListener("keydown", (event) => {
     if (event.key === "Escape") closeLightbox();
-    if (event.key === "ArrowLeft") stepLightbox(-1);
-    if (event.key === "ArrowRight") stepLightbox(1);
-    if (event.key === "+" || event.key === "=") setLightboxScale(lightboxScale + 0.5);
-    if (event.key === "-") setLightboxScale(lightboxScale - 0.5);
+    if (event.key === "ArrowLeft" && lightboxScale <= 1.01) stepLightbox(-1);
+    if (event.key === "ArrowRight" && lightboxScale <= 1.01) stepLightbox(1);
   });
 }
 
@@ -208,7 +214,7 @@ function openLightbox(index: number, urls: string[]) {
   ensureLightbox();
   lightboxUrls = urls;
   lightboxIndex = index;
-  lightboxScale = 1;
+  resetLightboxTransform();
   const lightbox = getLightbox();
   if (!lightbox) return;
   lightbox.classList.add("is-open");
@@ -217,58 +223,35 @@ function openLightbox(index: number, urls: string[]) {
   lightbox.focus({ preventScroll: true });
 }
 
-function polishServiceRows(root: HTMLElement) {
+function decorateServiceDigits(root: HTMLElement) {
   const list = root.querySelector<HTMLElement>(".anastasia-service-list");
   if (!list) return;
 
-  list.querySelectorAll<HTMLElement>(".anastasia-service-group").forEach((group) => group.remove());
-
-  const rows = Array.from(list.querySelectorAll<HTMLElement>(".mct-service-row"));
-  rows.forEach((row) => {
-    const strong = row.querySelector<HTMLElement>(".mct-service-name strong");
-    const description = row.querySelector<HTMLElement>(".dct-service-description");
-    if (!strong) return;
-
-    const original = strong.dataset.originalTitle || strong.textContent?.trim() || "";
-    strong.dataset.originalTitle = original;
-    const polished = SERVICE_POLISH[original];
-    if (!polished) return;
-    strong.textContent = polished.title;
-    if (description) description.textContent = polished.description;
+  list.querySelectorAll<HTMLElement>(".mct-service-name strong").forEach((strong) => {
+    if (strong.dataset.digitsReady === "true") return;
+    const text = strong.textContent ?? "";
+    const parts = text.split(/(\d+(?:[–-]\d+)?)/g);
+    if (parts.length <= 1) {
+      strong.dataset.digitsReady = "true";
+      return;
+    }
+    strong.replaceChildren(...parts.filter(Boolean).map((part) => {
+      if (!/^\d/.test(part)) return document.createTextNode(part);
+      const span = document.createElement("span");
+      span.className = "anastasia-service-digit";
+      span.textContent = part;
+      return span;
+    }));
+    strong.dataset.digitsReady = "true";
   });
-
-  const activeCategory = root.querySelector<HTMLButtonElement>(".anastasia-tabs .mct-tab.is-active")?.dataset.category;
-  const expanded = root.querySelector<HTMLButtonElement>(".anastasia-more-services")?.getAttribute("aria-expanded") === "true";
-  if (activeCategory !== "all" || !expanded) return;
-
-  const freshRows = Array.from(list.querySelectorAll<HTMLElement>(".mct-service-row"));
-  const insertGroup = (label: string, matcher: (original: string) => boolean) => {
-    const row = freshRows.find((item) => {
-      const original = item.querySelector<HTMLElement>("strong")?.dataset.originalTitle || "";
-      return matcher(original);
-    });
-    if (!row) return;
-    const group = document.createElement("div");
-    group.className = "anastasia-service-group";
-    group.textContent = label;
-    list.insertBefore(group, row);
-  };
-
-  insertGroup("Маникюр", (title) => !title.startsWith("Педикюр") && !title.includes("ресниц") && !title.includes("бровей"));
-  insertGroup("Педикюр", (title) => title.startsWith("Педикюр"));
-  insertGroup("Ресницы и брови", (title) => title.includes("ресниц") || title.includes("бровей"));
 }
 
-function bindServicePolish(root: HTMLElement) {
-  const controls = root.querySelectorAll<HTMLElement>(".anastasia-tabs .mct-tab, .anastasia-more-services");
-  controls.forEach((control) => {
-    if (control.dataset.polishBound === "true") return;
-    control.dataset.polishBound = "true";
-    control.addEventListener("click", () => {
-      window.requestAnimationFrame(() => window.requestAnimationFrame(() => polishServiceRows(root)));
-    });
-  });
-  polishServiceRows(root);
+function bindServiceDigits(root: HTMLElement) {
+  const services = root.querySelector<HTMLElement>(".anastasia-services");
+  if (!services || services.dataset.digitBinding === "true") return;
+  services.dataset.digitBinding = "true";
+  services.addEventListener("click", () => queueMicrotask(() => decorateServiceDigits(root)));
+  decorateServiceDigits(root);
 }
 
 function applyFinalTweaks() {
@@ -279,7 +262,7 @@ function applyFinalTweaks() {
   const optimizedBase = `${assetBase}/assets/anastasia-optimized`;
   const galleryUrls = galleryFiles.map((filename) => `${optimizedBase}/${filename}`);
 
-  bindServicePolish(root);
+  bindServiceDigits(root);
   ensureLightbox();
 
   const portfolioButtons = Array.from(root.querySelectorAll<HTMLButtonElement>("#mobile-portfolio .mct-work-tile, #mobile-portfolio .dct-film-frame"));
