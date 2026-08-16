@@ -1,0 +1,79 @@
+.anastasia-site .anastasia-tabs {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  margin: 15px 0 12px !important;
+  padding: 4px !important;
+  overflow: visible !important;
+  border-radius: 999px;
+  background: #eee5df;
+}
+
+.anastasia-site .anastasia-tabs .mct-tab {
+  width: 100%;
+  min-width: 0;
+  min-height: 37px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #5b5653;
+  font: 600 10.5px/1 "Manrope", Arial, sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.anastasia-site .anastasia-tabs .mct-tab:hover {
+  color: #342f2d;
+}
+
+.anastasia-site .anastasia-tabs .mct-tab:active {
+  transform: scale(.98);
+}
+
+.anastasia-site .anastasia-tabs .mct-tab.is-active {
+  background: #fff;
+  color: #282321;
+  box-shadow: 0 3px 12px rgba(69, 54, 48, .07);
+}
+
+/* Restore the image-led About card, now using a neutral AI still life. */
+.anastasia-site #mobile-about .mct-about-portrait-wrap {
+  position: relative !important;
+  min-height: 0 !important;
+  display: block !important;
+}
+
+.anastasia-site #mobile-about .mct-about-portrait {
+  display: block !important;
+  width: 100% !important;
+}
+
+.anastasia-site #mobile-about .mct-about-portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center 52%;
+}
+
+.anastasia-site #mobile-about .mct-about-experience {
+  position: absolute !important;
+  right: 13px !important;
+  bottom: 13px !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+.anastasia-site #mobile-promotions .mct-promotion-card:first-child figure img {
+  object-position: center 48%;
+}
+
+@media (max-width: 420px) {
+  .anastasia-site .anastasia-tabs .mct-tab {
+    min-height: 35px;
+    padding: 0 3px;
+    font-size: 9.4px;
+  }
+}
