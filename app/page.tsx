@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AnastasiaSite from "./anastasia-site";
+import AnastasiaFinalTweaks from "./anastasia-final-tweaks";
 
 export const metadata: Metadata = {
   title: "Анастасия — мастер маникюра и педикюра в Москве",
@@ -10,6 +11,7 @@ export default function Page() {
   return (
     <div className="site-root">
       <AnastasiaSite />
+      <AnastasiaFinalTweaks />
     </div>
   );
 }
