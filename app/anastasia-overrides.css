@@ -63,20 +63,34 @@ body {
 }
 
 .anastasia-tabs {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 0 0 18px;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.anastasia-tabs::-webkit-scrollbar {
-  display: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  margin: 15px 0 18px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #eee5df;
 }
 
 .anastasia-tabs .mct-tab {
-  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 37px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #5b5653;
+  font: 600 11px/1 "Manrope", Arial, sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.anastasia-tabs .mct-tab.is-active {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 3px 12px rgba(69, 54, 48, .07);
 }
 
 .anastasia-service-list {
@@ -92,21 +106,32 @@ body {
   display: none !important;
 }
 
+/* User-supplied portrait replaces every temporary or old master image. */
 .anastasia-site #mobile-about .mct-about-portrait-wrap {
   min-height: 220px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  display: block !important;
+  position: relative !important;
 }
 
 .anastasia-site #mobile-about .mct-about-portrait {
-  display: none !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+.anastasia-site #mobile-about .mct-about-portrait img {
+  display: block !important;
+  width: 100% !important;
+  aspect-ratio: 1/.9;
+  object-fit: cover !important;
+  object-position: center center !important;
 }
 
 .anastasia-site #mobile-about .mct-about-experience {
-  position: static !important;
+  position: absolute !important;
+  right: 13px !important;
+  bottom: 13px !important;
   transform: none !important;
-  margin: 0 auto !important;
+  margin: 0 !important;
 }
 
 @media (max-width: 760px) {
@@ -115,13 +140,18 @@ body {
   }
 
   .anastasia-tabs {
-    gap: 7px;
-    margin-right: calc(var(--mct-shell-pad) * -1);
-    padding-right: var(--mct-shell-pad);
-    padding-bottom: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 3px;
+    padding: 3px;
+  }
+
+  .anastasia-tabs .mct-tab {
+    min-height: 35px;
+    padding: 0 6px;
+    font-size: 9.5px;
   }
 
   .anastasia-site #mobile-about .mct-about-portrait-wrap {
-    min-height: 150px !important;
+    min-height: 0 !important;
   }
 }
