@@ -100,6 +100,15 @@ body.anastasia-lightbox-open {
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+  cursor: zoom-in;
+}
+
+.anastasia-lightbox-stage:has(.anastasia-lightbox-image.is-zoomed) {
+  cursor: grab;
+}
+
+.anastasia-lightbox-stage.is-panning {
+  cursor: grabbing;
 }
 
 .anastasia-lightbox-image {
@@ -168,15 +177,29 @@ body.anastasia-lightbox-open {
 }
 
 @media (min-width: 768px) {
-  /* Give the desktop hero more breathing room without changing its structure. */
-  .anastasia-site .mct-hero > .mct-shell {
-    width: min(1480px, calc(100% - 48px)) !important;
+  /* Desktop hero uses the whole viewport; only the text side keeps a safe inner gutter. */
+  .anastasia-site .mct-hero {
+    width: 100vw !important;
     max-width: none !important;
+    margin: 0 !important;
+  }
+
+  .anastasia-site .mct-hero > .mct-shell {
+    width: 100vw !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding-left: clamp(28px, 4vw, 68px) !important;
+    padding-right: clamp(24px, 2.6vw, 44px) !important;
+  }
+
+  /* Let the right-hand hero image visually finish at the viewport edge. */
+  .anastasia-site .mct-hero .mct-hero-visual {
+    margin-right: calc(-1 * clamp(24px, 2.6vw, 44px)) !important;
   }
 
   .anastasia-site .dct-hero-portrait {
     overflow: hidden !important;
-    border-radius: 24px !important;
+    border-radius: 24px 0 0 24px !important;
     box-shadow: 0 24px 70px rgba(69, 54, 48, .12) !important;
   }
 
