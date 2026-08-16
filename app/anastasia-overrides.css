@@ -20,15 +20,22 @@ body {
   display: none !important;
 }
 
-/* Intro must say Anastasia from the very first painted frame. */
+/* Minimal loading mark: no ClayTone fallback is visible once styles paint. */
 .anastasia-site .mct-intro-mark > span {
   font-size: 0 !important;
 }
 
 .anastasia-site .mct-intro-mark > span::after {
-  content: "Анастасия";
-  font: 500 clamp(51px, 15vw, 70px)/1 "Cormorant Garamond", Georgia, serif;
-  letter-spacing: -.045em;
+  content: "A";
+  display: block;
+  font: 500 clamp(88px, 13vw, 138px)/.72 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: -.08em;
+  transform: translateX(-.03em);
+}
+
+.anastasia-site .mct-intro-mark > i {
+  width: 34px;
+  opacity: .58;
 }
 
 .anastasia-site .mct-intro-mark > small {
@@ -36,9 +43,9 @@ body {
 }
 
 .anastasia-site .mct-intro-mark > small::after {
-  content: "мастер ногтевого сервиса";
+  content: "ANASTASIA";
   font: 600 9px/1 "Manrope", Arial, sans-serif;
-  letter-spacing: .18em;
+  letter-spacing: .28em;
   text-transform: uppercase;
 }
 
@@ -49,7 +56,7 @@ body {
   display: none !important;
 }
 
-/* Native Nonna service switcher is replaced with Anastasia's 4-way switcher. */
+/* Native Nonna service switcher is replaced with Anastasia's categories. */
 .anastasia-site #mobile-prices > .mct-shell > .mct-tabs,
 .anastasia-site #mobile-prices > .mct-shell > .mct-service-list,
 .anastasia-site #mobile-prices > .mct-shell > .mct-more-services {
@@ -63,9 +70,10 @@ body {
 }
 
 .anastasia-tabs {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  align-items: center;
   gap: 4px;
+  width: 100%;
   margin: 15px 0 18px;
   padding: 4px;
   border-radius: 999px;
@@ -73,10 +81,10 @@ body {
 }
 
 .anastasia-tabs .mct-tab {
-  width: 100%;
+  flex: 1 1 0;
   min-width: 0;
-  min-height: 37px;
-  padding: 0 10px;
+  min-height: 39px;
+  padding: 0 14px;
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -84,7 +92,11 @@ body {
   font: 600 11px/1 "Manrope", Arial, sans-serif;
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+  transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.anastasia-tabs .mct-tab:hover {
+  color: var(--ink);
 }
 
 .anastasia-tabs .mct-tab.is-active {
@@ -96,6 +108,14 @@ body {
 .anastasia-service-list {
   display: grid;
   gap: 0;
+}
+
+.anastasia-service-list .mct-service-row {
+  transition: background-color 180ms ease;
+}
+
+.anastasia-service-list .mct-service-row:hover {
+  background: rgba(255, 255, 255, .36);
 }
 
 .anastasia-more-services {
@@ -134,21 +154,101 @@ body {
   margin: 0 !important;
 }
 
+/* Desktop polish without changing the approved section structure. */
+@media (min-width: 768px) {
+  .anastasia-site .mct-shell {
+    width: min(1180px, calc(100% - 72px));
+  }
+
+  .anastasia-site #mobile-prices .mct-shell {
+    max-width: 1120px;
+  }
+
+  .anastasia-services {
+    max-width: 980px;
+    margin: 34px auto 0;
+  }
+
+  .anastasia-tabs {
+    max-width: 760px;
+    margin: 18px auto 24px;
+    padding: 5px;
+  }
+
+  .anastasia-tabs .mct-tab {
+    min-height: 42px;
+    padding: 0 20px;
+    font-size: 11.5px;
+  }
+
+  .anastasia-service-list {
+    border-top: 1px solid rgba(69, 54, 48, .10);
+  }
+
+  .anastasia-service-list .mct-service-row {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .anastasia-site #mobile-about .mct-about-portrait-wrap {
+    min-height: 430px !important;
+  }
+
+  .anastasia-site #mobile-about .mct-about-portrait img {
+    aspect-ratio: 4/5 !important;
+  }
+
+  .anastasia-site #mobile-promotions .mct-promotion-card figure img {
+    object-fit: cover;
+  }
+
+  .anastasia-site .mct-review-card,
+  .anastasia-site .mct-promotion-card,
+  .anastasia-site .mct-service-row {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+}
+
 @media (max-width: 760px) {
   .anastasia-services {
     margin-top: 20px;
   }
 
+  /* Deliberately scrollable: long category names stay readable instead of shrinking. */
   .anastasia-tabs {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 3px;
-    padding: 3px;
+    width: auto;
+    margin: 14px -18px 18px;
+    padding: 4px 18px;
+    gap: 5px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 0;
+    background: transparent;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-inline: contain;
+  }
+
+  .anastasia-tabs::-webkit-scrollbar {
+    display: none;
   }
 
   .anastasia-tabs .mct-tab {
-    min-height: 35px;
-    padding: 0 6px;
-    font-size: 9.5px;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: max-content;
+    min-height: 38px;
+    padding: 0 16px;
+    font-size: 10.5px;
+    scroll-snap-align: center;
+    background: #eee5df;
+  }
+
+  .anastasia-tabs .mct-tab.is-active {
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(69, 54, 48, .10);
   }
 
   .anastasia-site #mobile-about .mct-about-portrait-wrap {
