@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useLayoutEffect } from "react";
 import MobileClayTone from "./mobile-claytone";
 import "./anastasia-overrides.css";
 
@@ -69,7 +69,8 @@ function patchAttributes(root: ParentNode) {
     for (const attr of ["aria-label", "title"] as const) {
       const value = el.getAttribute(attr);
       if (!value) continue;
-      el.setAttribute(attr, value.replaceAll("ClayTone", "Анастасия").replaceAll("Нонна", "Анастасия"));
+      const next = value.replaceAll("ClayTone", "Анастасия").replaceAll("Нонна", "Анастасия");
+      if (next !== value) el.setAttribute(attr, next);
     }
   });
 
@@ -116,8 +117,8 @@ function patchImages(root: ParentNode) {
   });
 }
 
-function injectServices() {
-  const shell = document.querySelector<HTMLElement>("#mobile-prices .mct-shell");
+function injectServices(root: HTMLElement) {
+  const shell = root.querySelector<HTMLElement>("#mobile-prices .mct-shell");
   if (!shell || shell.querySelector(".anastasia-services")) return;
 
   const host = document.createElement("div");
@@ -139,14 +140,11 @@ function injectServices() {
   shell.appendChild(host);
 }
 
-function patchStaticContent() {
-  const root = document.querySelector<HTMLElement>(".anastasia-site");
-  if (!root) return;
-
+function patchStaticContent(root: HTMLElement) {
   patchText(root);
   patchAttributes(root);
   patchImages(root);
-  injectServices();
+  injectServices(root);
 
   root.querySelectorAll<HTMLElement>(".mct-brand").forEach((el) => { el.textContent = "Анастасия"; });
 
@@ -156,17 +154,16 @@ function patchStaticContent() {
   if (heroCopy) heroCopy.textContent = "10 лет опыта. Маникюр, педикюр, покрытие, укрепление и наращивание с аккуратной обработкой и стерильными инструментами.";
 
   const stats = root.querySelectorAll<HTMLElement>(".mct-stats .mct-stat");
-  if (stats[0]) stats[0].querySelector("strong")!.textContent = "10";
-  if (stats[1]) stats[1].querySelector("strong")!.innerHTML = '4,9 <i class="mct-stat-star">★</i>';
-  if (stats[2]) stats[2].querySelector("strong")!.textContent = "65";
+  if (stats[0]?.querySelector("strong")) stats[0].querySelector("strong")!.textContent = "10";
+  if (stats[1]?.querySelector("strong")) stats[1].querySelector("strong")!.innerHTML = '4,9 <i class="mct-stat-star">★</i>';
+  if (stats[2]?.querySelector("strong")) stats[2].querySelector("strong")!.textContent = "65";
 
   const portfolio = root.querySelector<HTMLElement>("#mobile-portfolio");
   const portfolioHeading = portfolio?.querySelector<HTMLElement>("h2");
   if (portfolioHeading) portfolioHeading.textContent = "Работы";
   const portfolioNote = portfolio?.querySelector<HTMLElement>(".mct-section-note");
-  if (portfolioNote) portfolioNote.textContent = "Примеры работ Анастасии из карточки на Яндекс Картах";
+  if (portfolioNote) portfolioNote.textContent = "Примеры работ Анастасии";
   portfolio?.querySelectorAll<HTMLElement>(".mct-ba-labels").forEach((el) => el.classList.add("anastasia-hide"));
-  portfolio?.querySelectorAll<HTMLButtonElement>("button").forEach((button) => { button.style.pointerEvents = "none"; });
 
   const promoHead = root.querySelector<HTMLElement>("#mobile-promotions .mct-promotions-head .mct-section-kicker");
   if (promoHead) promoHead.textContent = "Акции Анастасии";
@@ -181,12 +178,10 @@ function patchStaticContent() {
     const h3 = card.querySelector<HTMLElement>("h3");
     const benefit = card.querySelector<HTMLElement>(".mct-promotion-benefit");
     const p = card.querySelector<HTMLElement>(".mct-promotion-copy > p");
-    const img = card.querySelector<HTMLImageElement>("img");
     if (span) span.textContent = data[0];
     if (h3) h3.textContent = data[1];
     if (benefit) benefit.textContent = data[2];
     if (p) p.textContent = data[3];
-    if (img) { img.src = WORK_PHOTOS[index % WORK_PHOTOS.length]; img.alt = `Работа Анастасии — ${data[1]}`; }
   });
 
   const about = root.querySelector<HTMLElement>("#mobile-about");
@@ -200,7 +195,9 @@ function patchStaticContent() {
   if (aboutParagraphs?.[1]) aboutParagraphs[1].textContent = "Работает с маникюром, педикюром, покрытием, укреплением и наращиванием ногтей. Перед процедурой уточняет пожелания по форме и результату.";
   if (aboutParagraphs?.[2]) aboutParagraphs[2].textContent = "Кабинет находится рядом с метро Савёловская. Инструменты проходят стерилизацию, запись ведётся напрямую у мастера.";
   const aboutItems = about?.querySelectorAll<HTMLElement>(".mct-about-list li");
-  ["Маникюр и педикюр", "Наращивание и укрепление", "Стерильные инструменты"].forEach((text, i) => { if (aboutItems?.[i]) aboutItems[i].textContent = text; });
+  ["Маникюр и педикюр", "Наращивание и укрепление", "Стерильные инструменты"].forEach((text, i) => {
+    if (aboutItems?.[i]) aboutItems[i].textContent = text;
+  });
 
   const reviewCards = root.querySelectorAll<HTMLAnchorElement>("#mobile-reviews .mct-review-card");
   reviewCards.forEach((card, index) => {
@@ -221,42 +218,14 @@ function patchStaticContent() {
 }
 
 export default function AnastasiaSite() {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    patchStaticContent();
+  useLayoutEffect(() => {
     const root = document.querySelector<HTMLElement>(".anastasia-site");
-    if (!root) { setReady(true); return; }
-
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        mutation.addedNodes.forEach((node) => {
-          if (!(node instanceof HTMLElement)) return;
-          patchText(node);
-          patchAttributes(node);
-          patchImages(node);
-        });
-      }
-      patchStaticContent();
-    });
-    observer.observe(root, { childList: true, subtree: true });
-
-    const capture = (event: Event) => {
-      const target = event.target as HTMLElement | null;
-      const button = target?.closest("#mobile-portfolio button");
-      if (button) event.preventDefault();
-    };
-    root.addEventListener("click", capture, true);
-
-    requestAnimationFrame(() => setReady(true));
-    return () => {
-      observer.disconnect();
-      root.removeEventListener("click", capture, true);
-    };
+    if (!root) return;
+    patchStaticContent(root);
   }, []);
 
   return (
-    <div className={`anastasia-site${ready ? " is-ready" : ""}`}>
+    <div className="anastasia-site">
       <MobileClayTone />
     </div>
   );
