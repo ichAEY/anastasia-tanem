@@ -68,6 +68,18 @@ jobs:
       - name: Remove old exported Next assets
         run: rm -rf public/_next
 
+      - name: Personalize preloader source
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'app/mobile-claytone.tsx';
+          let source = fs.readFileSync(path, 'utf8');
+          source = source
+            .replace('<span>ClayTone</span>', '<span>A</span>')
+            .replace('<small>Nail studio</small>', '<small>ANASTASIA</small>');
+          fs.writeFileSync(path, source);
+          NODE
+
       - name: Ignore hosting-only TypeScript files for Pages build
         run: |
           node - <<'NODE'
