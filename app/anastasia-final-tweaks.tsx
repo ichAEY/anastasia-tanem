@@ -89,6 +89,7 @@ function applyFinalTweaks() {
   if (bookingTitle) bookingTitle.innerHTML = "Запись через WhatsApp<br /><em>напрямую у мастера</em>";
   const bookingCopy = booking?.querySelector<HTMLElement>(":scope > p");
   if (bookingCopy) bookingCopy.textContent = "Нажмите кнопку — откроется чат с Анастасией и готовым сообщением «Здравствуйте, хочу записаться».";
+
   const finalCta = booking?.querySelector<HTMLAnchorElement>(".mct-final-cta");
   if (finalCta) {
     finalCta.href = BOOKING;
@@ -97,6 +98,7 @@ function applyFinalTweaks() {
     const label = finalCta.querySelector<HTMLElement>("span");
     if (label) label.textContent = "Запись через WhatsApp";
   }
+
   const heroCta = root.querySelector<HTMLAnchorElement>(".mct-main-cta");
   if (heroCta) {
     heroCta.href = BOOKING;
@@ -104,6 +106,7 @@ function applyFinalTweaks() {
     heroCta.rel = "noopener noreferrer";
     heroCta.textContent = "Записаться в WhatsApp  →";
   }
+
   const sticky = root.querySelector<HTMLAnchorElement>(".mct-sticky");
   if (sticky) {
     sticky.href = BOOKING;
@@ -114,8 +117,10 @@ function applyFinalTweaks() {
     if (strong) strong.textContent = "Запись через WhatsApp";
     if (small) small.textContent = "Написать Анастасии";
   }
+
   const serviceHint = root.querySelector<HTMLElement>("#mobile-prices .mct-price-head > span");
   if (serviceHint) serviceHint.textContent = "Выберите услугу — запись откроется в WhatsApp в новой вкладке.";
+
   root.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((link) => {
     const href = link.getAttribute("href") ?? "";
     if (/^https?:\/\//i.test(href)) {
@@ -128,8 +133,25 @@ function applyFinalTweaks() {
 export default function AnastasiaFinalTweaks() {
   useLayoutEffect(() => {
     applyFinalTweaks();
-    const frame = window.requestAnimationFrame(applyFinalTweaks);
-    return () => window.cancelAnimationFrame(frame);
+    const initialFrame = window.requestAnimationFrame(applyFinalTweaks);
+    const galleryButton = document.querySelector<HTMLButtonElement>(".anastasia-site .mct-gallery-button");
+    let galleryFrame1: number | null = null;
+    let galleryFrame2: number | null = null;
+
+    const refreshGallery = () => {
+      galleryFrame1 = window.requestAnimationFrame(() => {
+        galleryFrame2 = window.requestAnimationFrame(applyFinalTweaks);
+      });
+    };
+
+    galleryButton?.addEventListener("click", refreshGallery);
+
+    return () => {
+      window.cancelAnimationFrame(initialFrame);
+      if (galleryFrame1 !== null) window.cancelAnimationFrame(galleryFrame1);
+      if (galleryFrame2 !== null) window.cancelAnimationFrame(galleryFrame2);
+      galleryButton?.removeEventListener("click", refreshGallery);
+    };
   }, []);
   return null;
 }
