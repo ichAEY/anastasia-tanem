@@ -23,7 +23,6 @@ const galleryOriginals = [
 function applyFinalTweaks() {
   const root = document.querySelector<HTMLElement>(".anastasia-site");
   if (!root) return;
-
   const assetBase = window.location.hostname.endsWith("github.io") ? "/anastasia-tanem" : "";
   const originalsBase = `${assetBase}/assets/anastasia-originals/anastasia-originals`;
   const galleryUrls = galleryOriginals.map((filename) => `${originalsBase}/${filename}`);
@@ -90,7 +89,6 @@ function applyFinalTweaks() {
   if (bookingTitle) bookingTitle.innerHTML = "Запись через WhatsApp<br /><em>напрямую у мастера</em>";
   const bookingCopy = booking?.querySelector<HTMLElement>(":scope > p");
   if (bookingCopy) bookingCopy.textContent = "Нажмите кнопку — откроется чат с Анастасией и готовым сообщением «Здравствуйте, хочу записаться».";
-
   const finalCta = booking?.querySelector<HTMLAnchorElement>(".mct-final-cta");
   if (finalCta) {
     finalCta.href = BOOKING;
@@ -99,7 +97,6 @@ function applyFinalTweaks() {
     const label = finalCta.querySelector<HTMLElement>("span");
     if (label) label.textContent = "Запись через WhatsApp";
   }
-
   const heroCta = root.querySelector<HTMLAnchorElement>(".mct-main-cta");
   if (heroCta) {
     heroCta.href = BOOKING;
@@ -107,7 +104,6 @@ function applyFinalTweaks() {
     heroCta.rel = "noopener noreferrer";
     heroCta.textContent = "Записаться в WhatsApp  →";
   }
-
   const sticky = root.querySelector<HTMLAnchorElement>(".mct-sticky");
   if (sticky) {
     sticky.href = BOOKING;
@@ -118,10 +114,8 @@ function applyFinalTweaks() {
     if (strong) strong.textContent = "Запись через WhatsApp";
     if (small) small.textContent = "Написать Анастасии";
   }
-
   const serviceHint = root.querySelector<HTMLElement>("#mobile-prices .mct-price-head > span");
   if (serviceHint) serviceHint.textContent = "Выберите услугу — запись откроется в WhatsApp в новой вкладке.";
-
   root.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((link) => {
     const href = link.getAttribute("href") ?? "";
     if (/^https?:\/\//i.test(href)) {
